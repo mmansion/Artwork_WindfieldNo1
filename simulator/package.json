@@ -11,5 +11,8 @@
   "dependencies": {
     "p5js": "^1.2.18",
     "three": "^0.155.0"
+  },
+  "devDependencies": {
+    "dat.gui": "^0.7.9"
   }
 }
