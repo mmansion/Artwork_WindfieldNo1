@@ -6,43 +6,121 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //import control panel from public folder
 import ControlPanel from './public/ControlPanel.js';
 
+//-------------------------------------------
+//SETTTINGS
 
-console.log(ControlPanel);
+const UNITS_PER_FOOT = 100;
+const TILE_SIZE = 4; //ft
+const PIXELS_PER_FOOT = 4;
+const PIXEL_SIZE = 5;
 
+
+//-------------------------------------------
 const scene = new THREE.Scene();
 
-
-
+//-------------------------------------------
 //add an arrow helper for the x, y, z axis
 const axesHelper = new THREE.AxesHelper(100);
 scene.add(axesHelper);
 
 function addGrid() {
+
     const size = 1000;
     const divisions = 10;
  
     const gridHelper = new THREE.GridHelper(size, divisions);
-
+    
     //change color of grid lines
     // gridHelper.material.color = new THREE.Color(0x0000ff);
-
+    
     //change material of grid lines
     gridHelper.material = new THREE.LineBasicMaterial({
-       // make a transparent line color
+        // make a transparent line color
         color: 0x0000ff,
         opacity: 0.2,
         transparent: true,
         //make thin lines
         linewidth: 1
     });
-
-
-
     scene.add(gridHelper);
 }
 addGrid();
 
 
+//-------------------------------------------
+
+class Led {
+    constructor(pos) {
+        this._geometry = new THREE.SphereGeometry(PIXEL_SIZE, 16, 16);
+        this._material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        this._object   = new THREE.Mesh(this._geometry, this._material);
+        this._object.position.set(pos.x, pos.y, pos.z);
+    }
+    addToScene(scene) {
+        scene.add(this._object);
+    }
+    addToGroup(group) {
+        group.add(this._object);
+    }
+}
+
+class Tile {
+    constructor(pos) {
+        this._group = new THREE.Group();
+        this._group.position.set(UNITS_PER_FOOT/2, 0, UNITS_PER_FOOT/2);
+        let groupPos = this._group.position;
+        groupPos.x += pos.x;
+        groupPos.y += pos.y;
+        groupPos.z += pos.z;
+        console.log(groupPos);
+        this._group.position.set(groupPos.x, groupPos.y, groupPos.z);
+        
+        let size = TILE_SIZE * UNITS_PER_FOOT
+        const geometry = new THREE.PlaneGeometry(size, size);   
+        const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, wireframeLinewidth: 40, side: THREE.DoubleSide });
+        const plane = new THREE.Mesh(geometry, material);
+        plane.rotation.x = Math.PI / 2;
+        plane.position.set(size / 2 - UNITS_PER_FOOT/2, 0, size/2-UNITS_PER_FOOT/2);
+        this._group.add(plane);
+        // console.log(this._group.position);
+        
+        //create a 4x4 grid of leds
+        for (let i = 0; i < PIXELS_PER_FOOT; i++) {
+            for (let j = 0; j < PIXELS_PER_FOOT; j ++) {
+                let led = new Led({ 
+                    x: i * UNITS_PER_FOOT, 
+                    y: 0, z: j * UNITS_PER_FOOT 
+                });
+                led.addToGroup(this._group);
+            }
+        }
+        
+        // return this;
+
+        // this._geometry = new THREE.PlaneGeometry(100, 100);
+        // this._material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        // this._object   = new THREE.Mesh(this._geometry, this._material);
+        // this._object.position.set(pos.x, pos.y, pos.z);
+    }
+    get group() {
+        console.log('here');
+        // return this._group;
+    }
+    addToScene(scene) {
+        scene.add(this._group);
+    }
+    addToGroup(group) {
+        group.add(this._group);
+    }
+}
+
+let tilePos1 = {x: 0, y:0, z: -(UNITS_PER_FOOT*TILE_SIZE)*1};
+let tile1 = new Tile(tilePos1).addToScene(scene);
+
+let tilePos2 = { x: 0, y: 0, z: -(UNITS_PER_FOOT * TILE_SIZE) * 2 };
+let tile2 = new Tile(tilePos2).addToScene(scene);
+
+//-------------------------------------------
 let toggleOrtho = false;
 
 const frustumSize = 500;
@@ -51,24 +129,9 @@ scene.background = new THREE.Color(0xffffff);
 const aspect = window.innerWidth / window.innerHeight;
 
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-// let camera = new THREE.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 0.1, 1000);
-
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
-const geometry = new THREE.BoxGeometry(100, 100, 100);
-// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, wireframeLinewidth: 40, side: THREE.DoubleSide });
-const cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
-
-
-//plane geometry
-const planeGeom = new THREE.PlaneGeometry(100, 100);
-// const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-const plane = new THREE.Mesh(planeGeom, material);
-scene.add(plane);
 
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.addEventListener("change", event => {
@@ -80,18 +143,9 @@ camera.position.set(598, 598, 598);
 camera.zoom = 4;
 camera.lookAt(0, 0, 0);
 
-function addSphere() {
-    const geometry = new THREE.SphereGeometry(15, 32, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    const sphere = new THREE.Mesh(geometry, material); scene.add(sphere);
-    scene.add(sphere);
-}
-addSphere();
 
 function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
     renderer.render(scene, camera);
 }
 
