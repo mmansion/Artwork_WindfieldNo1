@@ -5,63 +5,18 @@
     <meta charset="utf-8">
     <title>My first three.js app</title>
     <style>
-        *, html, body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        }  
-
-        canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        }
-
-        #container {
-        z-index: 10;
-        }
-
-        #container canvas {
-        z-index: 20;
-        }
-
-        #defaultCanvas {
-        z-index: 5;
+        html, body {
+            margin: 0;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    <!-- <script type="module" src="main.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script> -->
+    <script type="module" src="main.js"></script>
+ 
 </head>
 
     <body>
-        <div id="container"></div>
-            <script type="x-shader/x-vertex" id="vertexShader">
-                uniform sampler2D displaceMap;
-                uniform float maxDisplacement;
-                
-                void main()
-                {
-                    originalMain();
-                    
-                    float displacement = maxDisplacement * (1. - texture2D(displaceMap, uv).r);
-                    
-                    vec3 newPosition = position;
-                    newPosition.y -= displacement;
-                    
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-                }
-          </script>
-          <script>
-            function setup(){
-                createCanvas(400, 400, WEBGL);
-            }
-            function draw(){
-                background(0);
-                rotateX(frameCount * 0.01);
-                rotateY(frameCount * 0.01);
-                box(100);
-            }
-          </script>
+
+    
     </body>
 
 </html>
