@@ -14,6 +14,11 @@ const TILE_SIZE = 4; //ft
 const PIXELS_PER_FOOT = 4;
 const PIXEL_SIZE = 5;
 
+const tileGrid = [
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 2, 0, 1],
+];
 
 //-------------------------------------------
 const scene = new THREE.Scene();
@@ -72,16 +77,19 @@ class Tile {
         groupPos.x += pos.x;
         groupPos.y += pos.y;
         groupPos.z += pos.z;
+
         console.log(groupPos);
         this._group.position.set(groupPos.x, groupPos.y, groupPos.z);
         
-        let size = TILE_SIZE * UNITS_PER_FOOT
+        let size = TILE_SIZE * UNITS_PER_FOOT;
+
         const geometry = new THREE.PlaneGeometry(size, size);   
         const material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, wireframeLinewidth: 40, side: THREE.DoubleSide });
         const plane = new THREE.Mesh(geometry, material);
         plane.rotation.x = Math.PI / 2;
         plane.position.set(size / 2 - UNITS_PER_FOOT/2, 0, size/2-UNITS_PER_FOOT/2);
         this._group.add(plane);
+
         // console.log(this._group.position);
         
         //create a 4x4 grid of leds
@@ -94,17 +102,13 @@ class Tile {
                 led.addToGroup(this._group);
             }
         }
-        
-        // return this;
 
+        // return this;
         // this._geometry = new THREE.PlaneGeometry(100, 100);
         // this._material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
         // this._object   = new THREE.Mesh(this._geometry, this._material);
         // this._object.position.set(pos.x, pos.y, pos.z);
-    }
-    get group() {
-        console.log('here');
-        // return this._group;
+
     }
     addToScene(scene) {
         scene.add(this._group);
@@ -139,10 +143,9 @@ controls.addEventListener("change", event => {
 });
 controls.update();
 
-camera.position.set(598, 598, 598);
+camera.position.set(2598, 2598, 2598);
 camera.zoom = 4;
 camera.lookAt(0, 0, 0);
-
 
 function animate() {
     requestAnimationFrame(animate);
@@ -153,9 +156,6 @@ let cpanel = new ControlPanel(camera);
 
 //last step
 animate();
-
-
-
 
 //     window.addEventListener('resize', onWindowResize);
 //     createPanel();
