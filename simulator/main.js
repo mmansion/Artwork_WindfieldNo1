@@ -24,12 +24,30 @@ const tileGrid = [ //rows: W->E, cols: N->S
 ];
 
 //-------------------------------------------
-const scene = new THREE.Scene();
+let mesh, mesh2, renderer, scene, camera, controls;
+let count = 0;
+
+
+
+function animate() {
+
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+
+}
+
+function addHelpers() {
+    //add an arrow helper for the x, y, z axis
+    const axesHelper = new THREE.AxesHelper(100);
+    scene.add(axesHelper);
+}
+
+
+
+// const scene = new THREE.Scene();
 
 //-------------------------------------------
-//add an arrow helper for the x, y, z axis
-const axesHelper = new THREE.AxesHelper(100);
-scene.add(axesHelper);
+
 
 function addGrid() {
 
@@ -50,9 +68,10 @@ function addGrid() {
         //make thin lines
         linewidth: 1
     });
+
     scene.add(gridHelper);
 }
-addGrid();
+
 
 
 //-------------------------------------------
@@ -81,7 +100,6 @@ class Tile {
         groupPos.y += pos.y;
         groupPos.z += pos.z;
 
-        console.log(groupPos);
         this._group.position.set(groupPos.x, groupPos.y, groupPos.z);
         
         let size = TILE_SIZE * UNITS_PER_FOOT;
@@ -105,13 +123,6 @@ class Tile {
                 led.addToGroup(this._group);
             }
         }
-
-        // return this;
-        // this._geometry = new THREE.PlaneGeometry(100, 100);
-        // this._material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-        // this._object   = new THREE.Mesh(this._geometry, this._material);
-        // this._object.position.set(pos.x, pos.y, pos.z);
-
     }
     addToScene(scene) {
         scene.add(this._group);
@@ -121,132 +132,159 @@ class Tile {
     }
 }
 
-let tilePos1 = {x: 0, y:0, z: -(UNITS_PER_FOOT*TILE_SIZE)*1};
-let tile1 = new Tile(tilePos1).addToScene(scene);
 
-let tilePos2 = { x: 0, y: 0, z: -(UNITS_PER_FOOT * TILE_SIZE) * 2 };
-let tile2 = new Tile(tilePos2).addToScene(scene);
 
 //-------------------------------------------
-let toggleOrtho = false;
+// let toggleOrtho = false;
 
-const frustumSize = 500;
-scene.background = new THREE.Color(0xffffff);
 
-const aspect = window.innerWidth / window.innerHeight;
+// let aspect = window.innerWidth / window.innerHeight;
 
-let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+// const frustumSize = 5000;
+// // const aspect = window.innerWidth / window.innerHeight;
 
-let controls = new OrbitControls(camera, renderer.domElement);
-controls.addEventListener("change", event => {
-    console.log(controls.object.position);
-});
-controls.update();
+// scene.background = new THREE.Color(0xffffff);
 
-camera.position.set(2598, 2598, 2598);
-camera.zoom = 4;
-camera.lookAt(0, 0, 0);
+// let viewBlock = 5000;
+// let camera = new THREE.OrthographicCamera(-viewBlock * aspect, viewBlock * aspect, viewBlock, -viewBlock, -10000, 10000);
+// // camera.position.set(0, 0, 100);
+// camera.position.set(0, -1, 0);
+// camera.lookAt(0, 0, 0);
+// // camera.translateZ(-100);
+// camera.updateProjectionMatrix();
 
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
 
-let cpanel = new ControlPanel(camera);
+// // let camera = new THREE.OrthographicCamera(0.5 * frustumSize * aspect / - 2, 0.5 * frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 0.01, 100000);
+// // let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100000);
+// // let camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0.01, 100000);
 
-//last step
-animate();
+// // const renderer = new THREE.WebGLRenderer();
+// const renderer = new THREE.WebGLRenderer({ antialias: false });
+// renderer.setSize(window.innerWidth, window.innerHeight);
+// document.body.appendChild(renderer.domElement);
+// renderer.domElement.style.imageRendering = 'pixelated'; //PB-2
+// renderer.domElement.style.transform = "scale(0.8,0.8)"; //PB-3
+// window.addEventListener("resize", onWindowResize, false);
 
-//     window.addEventListener('resize', onWindowResize);
-//     createPanel();
+// let controls = new OrbitControls(camera, renderer.domElement);
+// controls.addEventListener("change", event => {
+//     console.log(controls.object.position);
+// });
+// // controls.object.position.set(17, 19, 3500);
+// controls.update();
 
-// }
+// camera.translateZ(-10);
+// camera.up.angleTo(new THREE.Vector3(0, 1, 0));
+// camera.position.set(10, 10, 10);
 
-// function onWindowResize() {
+// camera.lookAt(0, 0, 1);
+// camera.zoom = 1;
+// camera.updateProjectionMatrix();
 
-//     const aspect = window.innerWidth / window.innerHeight;
 
-//     camera.left = - frustumSize * aspect / 2;
-//     camera.right = frustumSize * aspect / 2;
-//     camera.top = frustumSize / 2;
-//     camera.bottom = - frustumSize / 2;
-
-//     camera.updateProjectionMatrix();
-
-//     renderer.setSize(window.innerWidth, window.innerHeight);
-
-//     // renderer2.setSize(window.innerWidth, window.innerHeight);
-
-// }
+// camera.updateProjectionMatrix();
+// camera.zoom = 0.1;
+// camera.updateProjectionMatrix();
+// camera.lookAt(0, 0, 1);
+// camera.updateProjectionMatrix();
+// camera.updateProjectionMatrix();
 
 // function animate() {
-
 //     requestAnimationFrame(animate);
-
 //     renderer.render(scene, camera);
-//     // renderer2.render(scene2, camera);
-
 // }
 
-// function createPanel() {
 
-//     const panel = new GUI();
-//     const folder1 = panel.addFolder('camera setViewOffset').close();
 
-//     const settings = {
-//         'setViewOffset'() {
+// //last step
+// animate();
 
-//             folder1.children[1].enable().setValue(window.innerWidth);
-//             folder1.children[2].enable().setValue(window.innerHeight);
-//             folder1.children[3].enable().setValue(0);
-//             folder1.children[4].enable().setValue(0);
-//             folder1.children[5].enable().setValue(window.innerWidth);
-//             folder1.children[6].enable().setValue(window.innerHeight);
+// function onWindowResize() {
+//     camera.left = window.innerWidth / -2;
+//     camera.right = window.innerWidth / 2;
+//     camera.top = window.innerHeight / 2;
+//     camera.bottom = window.innerHeight / -2;
 
-//         },
-//         'fullWidth': 0,
-//         'fullHeight': 0,
-//         'offsetX': 0,
-//         'offsetY': 0,
-//         'width': 0,
-//         'height': 0,
-//         'clearViewOffset'() {
-
-//             folder1.children[1].setValue(0).disable();
-//             folder1.children[2].setValue(0).disable();
-//             folder1.children[3].setValue(0).disable();
-//             folder1.children[4].setValue(0).disable();
-//             folder1.children[5].setValue(0).disable();
-//             folder1.children[6].setValue(0).disable();
-//             camera.clearViewOffset();
-
-//         }
-//     };
-
-//     folder1.add(settings, 'setViewOffset');
-//     folder1.add(settings, 'fullWidth', window.screen.width / 4, window.screen.width * 2, 1).onChange((val) => updateCameraViewOffset({ fullWidth: val })).disable();
-//     folder1.add(settings, 'fullHeight', window.screen.height / 4, window.screen.height * 2, 1).onChange((val) => updateCameraViewOffset({ fullHeight: val })).disable();
-//     folder1.add(settings, 'offsetX', 0, 256, 1).onChange((val) => updateCameraViewOffset({ x: val })).disable();
-//     folder1.add(settings, 'offsetY', 0, 256, 1).onChange((val) => updateCameraViewOffset({ y: val })).disable();
-//     folder1.add(settings, 'width', window.screen.width / 4, window.screen.width * 2, 1).onChange((val) => updateCameraViewOffset({ width: val })).disable();
-//     folder1.add(settings, 'height', window.screen.height / 4, window.screen.height * 2, 1).onChange((val) => updateCameraViewOffset({ height: val })).disable();
-//     folder1.add(settings, 'clearViewOffset');
-
+//     camera.updateProjectionMatrix();
+//     renderer.setSize(window.innerWidth, window.innerHeight);
 // }
+function init() {
 
-// function updateCameraViewOffset({ fullWidth, fullHeight, x, y, width, height }) {
+    // renderer
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
 
-//     if (!camera.view) {
+    // scene
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
 
-//         camera.setViewOffset(fullWidth || window.innerWidth, fullHeight || window.innerHeight, x || 0, y || 0, width || window.innerWidth, height || window.innerHeight);
+    // camera
+    const frustumSize = 1000;
+    const aspect = window.innerWidth / window.innerHeight;
 
-//     } else {
+    camera = new THREE.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 0, 100);
+    camera.up.set(0, 0, 1);
+    camera.position.set(5, 0, 10);
 
-//         camera.setViewOffset(fullWidth || camera.view.fullWidth, fullHeight || camera.view.fullHeight, x || camera.view.offsetX, y || camera.view.offsetY, width || camera.view.width, height || camera.view.height);
+    // controls
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.touches.ONE = THREE.TOUCH.PAN;
+    controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+    controls.target.set(5, 0, 0);
+    controls.update();
 
-//     }
+    // ambient
+    // scene.add(new THREE.AmbientLight(0xffffff));
 
-// }
+    // light
+    var light = new THREE.DirectionalLight(0xffffff, 10);
+    light.position.set(0, 2, 2);
+    // scene.add(light);
+
+    // axes
+    scene.add(new THREE.AxesHelper(20));
+
+    // geometry
+    var geometry = new THREE.PlaneGeometry(5, 5);
+
+    // material
+    var material = new THREE.MeshPhongMaterial({
+        color: 0x00ffff,
+        side: THREE.DoubleSide
+    });
+
+
+    // mesh
+    mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    var geometry2 = new THREE.PlaneGeometry(3, 3);
+    var material2 = new THREE.MeshPhongMaterial({
+        color: 0x00ffff,
+        side: THREE.DoubleSide
+    });
+    mesh2 = new THREE.Mesh(geometry2, material2);
+    mesh2.position.x = 5;
+    scene.add(mesh2);
+
+    addGrid();
+    addHelpers();
+
+    //loop through tileGrid and add tiles to scene
+    for (let i = 0; i < tileGrid.length; i++) {
+        for (let j = 0; j < tileGrid[i].length; j++) {
+            if (tileGrid[i][j] === 1) {
+                let tilePos = { x: i * UNITS_PER_FOOT * TILE_SIZE * -1, y: 0, z: j * UNITS_PER_FOOT * TILE_SIZE };
+                let tile = new Tile(tilePos).addToScene(scene);
+            }
+        }
+    }
+
+    animate();
+
+    let cpanel = new ControlPanel(camera);
+}
+
+init();
