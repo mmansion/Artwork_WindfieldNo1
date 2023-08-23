@@ -5,19 +5,163 @@
     <meta charset="utf-8">
     <title>My first three.js app</title>
     <style>
-        html, body {
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
             margin: 0;
+        }
+
+        main {
+            position: relative;
+        }
+
+        #optionsContainer {
+            overflow: hidden;
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+
+            height: 3rem;
+            width: 3rem;
+            display: flex;
+            transition: 0.6s;
+            border-radius: 0.4rem;
+        }
+
+        #optionsInner {
+            min-height: 100%;
+            width: 100%;
+            position: relative;
+
+
+        }
+
+        #optionsContent {
+            display: none;
+            min-height: 100%;
+            padding: 0.6rem 0.6rem 2rem 0.6rem;
+        }
+
+        #optionsContent>h1 {
+            margin: 0;
+            height: 2.4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        #optionsContent>button {
+            margin: 0.4rem 0;
+        }
+
+        #optionsContent .buttonRow {
+            margin: 0.6rem 0;
+        }
+
+        input {
+            margin: 0 0 0.8rem 0;
+            display: block;
+            padding: 0;
+            border-radius: 0.4rem;
+            border: none;
+        }
+
+        label {
+            margin: 0.1rem 0;
+            display: block;
+        }
+
+        .numOptions {
+            width: 100%;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid black;
+        }
+
+        #optionsToggle {
+            cursor: pointer;
+            border-radius: 50%;
+            position: absolute;
+            top: 0.2rem;
+            right: 0.2rem;
+            height: 2.8rem;
+            width: 2.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: lightgreen;
+        }
+
+        @keyframes addScrollbar {
+            0% {
+                overflow: hidden;
+            }
+
+            99% {
+                overflow: hidden;
+            }
+
+            100% {
+                overflow: auto;
+            }
+        }
+
+        /* .options:hover, */
+        #optionsContainer.open {
+            overflow: auto;
+            height: 46rem;
+            max-height: calc(100% - 4rem);
+            width: 20rem;
+            background-color: rgb(235, 235, 235);
+            animation: 0.6s addScrollbar;
+            /* preven scrollbar from showing while size changes */
+        }
+
+        #optionsContainer.open #optionsContent {
+            display: block;
+        }
+
+        #renderContainer {
+            height: 100vh;
+            width: 100%;
+        }
+
+        canvas {
+            display: block;
         }
     </style>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script> -->
     <!-- <script type="module" src="ControlPanel.js"></script> -->
     <script type="module" src="main.js"></script>
+    
  
 </head>
+<body>
+<main>
+    <div id="optionsContainer" class="">
+        <div id="optionsInner">
+            <div id="optionsToggle">
+                X
+            </div>
+            <div id="optionsContent">
+                <h1>SETTINGS</h1>
+                <div class="buttonRow">
+                    <button id="startStopButton" type="button">STOP</button>
+                    <button id="resetButton" type="button">RESET</button>
+                </div>
+                <div class="buttonRow">
+                    <button id="button2D" type="button">2D</button>
+                    <!-- <button id="button3D" type="button">3D</button> -->
+                    <!-- <button id="freeCamera" type="button">Free Camera</button> -->
+                </div>
 
-    <body>
-
-    
-    </body>
-
+            </div>
+        </div>
+    </div>
+    <div id="renderContainer">
+        <!-- container that the three.js canvas will be placed in -->
+    </div>
+</main>    
+</body>
 </html>
