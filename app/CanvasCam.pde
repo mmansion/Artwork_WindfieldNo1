@@ -26,7 +26,16 @@ public class CanvasCam {
     // At the end of drawing.
     //p.registerMethod("draw", this);
   }
- 
+  
+  float[] mouseRotate(float mx, float my, float angle,
+    float xc, float yc) {
+    float mtx=mx;
+    float mty=my;
+    mx= xc + (mtx-xc) * cos(-angle) - (mty-yc) * sin(-angle);
+    my= yc + (mtx-xc) * sin(-angle) + (mty-yc) * cos(-angle);
+    float[] mxmy= { mx, my };
+    return mxmy;
+  }
 
   public void draw() {
    
@@ -44,18 +53,37 @@ public class CanvasCam {
       case MouseEvent.RELEASE:
         println("Mouse Released");
         break;
-      case MouseEvent.WHEEL:
+      case MouseEvent.DRAG:
+      
+        float[] m = mouseRotate(constrain(mouseX, 0, width),
+        constrain(mouseY, 0, height), angle, width/2, height/2);
+        mX=m[0];
+        mY=m[1];
+
+        m=mouseRotate(constrain(pmouseX, 0, width),
+        constrain(pmouseY, 0, height), angle, width/2, height/2);
+        pmX=m[0];
+        pmY=m[1];
+
+        panx += (mX - pmX) * w/width;
+        pany += (mY - pmY) * h/height;
+        break;
+        
+      case MouseEvent.WHEEL: //TODO: smooth with rolling average of count
+
         println("Mouse Wheel");
         float count = e.getCount();
         if(count == 0) return;
         float speed = map(count, 0, 20, 1, 1.2);
         int scrollDir = (count >= 0) ? 1 : -1;
-        if(millis() - lastDirChange > 300) {
-          if(scrollDir != zoomDir) {
+        if(scrollDir != zoomDir) {
+          if(millis() - lastDirChange > 200) {
             lastDirChange = millis();
             zoomDir = scrollDir;
             println("change dir");
             println(zoomDir);
+          } else {
+            return;
           }
         }
         float zoom = (zoomDir > 0) ? 1.01 : 0.99;
@@ -101,24 +129,25 @@ public class CanvasCam {
         }
         break;
       case KeyEvent.TYPE:
-        //println("Keytyped");
+        println(key2);
+        if(key2 == 'r') {
+          x=0;
+          y=0;
+          w=width;
+          h=height;
+          mX=0;
+          mY=0;
+          angle=0;
+          zoomDir = 0;
+        }
+        
         //this.keyTyped( key2);
         break;
       }
   }
 
   public void pre() {
-    //r to reset all zooms and translates
-    if (key == 'r') {
-      x=0;
-      y=0;
-      w=width;
-      h=height;
-      mX=0;
-      mY=0;
-      angle=0;
-    }
-
+    
     //mouseDragged translation
     dpx= (panx - px) * easing;
     dpy= (pany - py) * easing;
@@ -139,37 +168,3 @@ public class CanvasCam {
     translate(-x, -y);
   }
 }
-
-//void mouseWheel(MouseEvent event) {
-
-
-//}
-
-//void mouseDragged() {
-//  float[] m=mouseRotate(constrain(mouseX, 0, width),
-//  constrain(mouseY, 0, height), angle, width/2, height/2);
-//  mX=m[0];
-//  mY=m[1];
-
-//  m=mouseRotate(constrain(pmouseX, 0, width),
-//  constrain(pmouseY, 0, height), angle, width/2, height/2);
-//  pmX=m[0];
-//  pmY=m[1];
-
-//  panx += (mX - pmX) * w/width;
-//  pany += (mY - pmY) * h/height;
-//}
-
-
-
-//float[] mouseRotate(float mx, float my, float angle,
-//float xc, float yc) {
-//  float mtx=mx;
-//  float mty=my;
-//  mx= xc + (mtx-xc) * cos(-angle) - (mty-yc) * sin(-angle);
-//  my= yc + (mtx-xc) * sin(-angle) + (mty-yc) * cos(-angle);
-//  float[] mxmy= {
-//    mx, my
-//  };
-//  return mxmy;
-//}
