@@ -46,6 +46,24 @@ public class CanvasCam {
         break;
       case MouseEvent.WHEEL:
         println("Mouse Wheel");
+        float count = e.getCount();
+        if(count == 0) return;
+        float speed = map(count, 0, 20, 1, 1.2);
+        int scrollDir = (count >= 0) ? 1 : -1;
+        if(millis() - lastDirChange > 300) {
+          if(scrollDir != zoomDir) {
+            lastDirChange = millis();
+            zoomDir = scrollDir;
+            println("change dir");
+            println(zoomDir);
+          }
+        }
+        float zoom = (zoomDir > 0) ? 1.01 : 0.99;
+        zoom*=speed;
+        x += .5 * w * ( 1 - 1 / zoom );
+        y += .5 * h * ( 1 - 1 / zoom );
+        w *= 1 / zoom;
+        h *= 1 / zoom;
         break;
       default:
         break;
@@ -123,29 +141,7 @@ public class CanvasCam {
 }
 
 //void mouseWheel(MouseEvent event) {
-//   float e = event.getCount();
-//   if(e == 0) return;
-//   float speed = map(e, 0, 20, 1, 1.2);
-//   int scrollDir = (e >= 0) ? 1 : -1;
 
-//   if(millis() - lastDirChange > 300) {
-//    if(scrollDir != zoomDir) {
-//      lastDirChange = millis();
-//      zoomDir = scrollDir;
-//      println("change dir");
-//      println(zoomDir);
-//    }
-//  }
-
-//  //print(zoomDir);
-
-//  //println(e);
-//  float zoom = (zoomDir > 0) ? 1.01 : 0.99;
-//  zoom*=speed;
-//  x += .5 * w * ( 1 - 1 / zoom );
-//  y += .5 * h * ( 1 - 1 / zoom );
-//  w *= 1 / zoom;
-//  h *= 1 / zoom;
 
 //}
 
