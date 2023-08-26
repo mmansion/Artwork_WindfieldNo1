@@ -1,7 +1,6 @@
 WindParticle[] windParticles;
 boolean showParticles = false;
 boolean applyGrid = true;
-
 boolean showRange = true;
 
 int numParticles = 2;
@@ -53,7 +52,7 @@ void draw() {
   }
 }
 void mousePressed() {
-  println("mouse was pressed");
+  
 }
 
 void mouseReleased() {

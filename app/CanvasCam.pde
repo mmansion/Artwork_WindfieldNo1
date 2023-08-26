@@ -29,8 +29,7 @@ public class CanvasCam {
  
 
   public void draw() {
-    println("after draw");
-    println("---");
+   
   }
 
   //void mousePressed() {
@@ -38,8 +37,18 @@ public class CanvasCam {
   //}
 
   public void mouseEvent(MouseEvent e) {
-    if (e.getAction() == MouseEvent.PRESS) {
-      println("mouse pressed at " + e.getX() + " " + e.getY());
+    switch (e.getAction()) {
+      case MouseEvent.PRESS:
+        println("Mouse Pressed");
+        break;
+      case MouseEvent.RELEASE:
+        println("Mouse Released");
+        break;
+      case MouseEvent.WHEEL:
+        println("Mouse Wheel");
+        break;
+      default:
+        break;
     }
   }
   void onKeyPress() {
@@ -47,7 +56,7 @@ public class CanvasCam {
   }
   public void keyEvent(KeyEvent e) {
     if (!keyRepeatEnabled && e.isAutoRepeat()) return;
-    KeyEvent keyEvent = e;
+
     char key2 = e.getKey();
     keyCode = e.getKeyCode();
 
@@ -81,7 +90,6 @@ public class CanvasCam {
   }
 
   public void pre() {
-    println("update called");
     //r to reset all zooms and translates
     if (key == 'r') {
       x=0;
