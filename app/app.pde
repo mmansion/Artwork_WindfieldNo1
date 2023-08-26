@@ -13,6 +13,8 @@ int cols = 16;
 int rows = 16;
 float noiseScale = 0.01/4; // increase divisor for change in pattern
 
+CanvasCam cam;
+
 void setup() {
   size(800, 800);
   
@@ -27,9 +29,14 @@ void setup() {
   if (applyGrid) {
     grid = new Grid(cols, rows);
   }
+  
+  cam = new CanvasCam(this);
+  
 }
 
 void draw() {
+  println("111");
+  noLoop();
   if (showParticles) {
     fill(0, 10);
     rect(0, 0, width, height);
@@ -45,6 +52,9 @@ void draw() {
     windParticles[i].update();
     windParticles[i].display();
   }
+}
+void mousePressed() {
+  println("mouse was pressed");
 }
 
 void mouseReleased() {

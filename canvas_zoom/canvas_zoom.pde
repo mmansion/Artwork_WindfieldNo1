@@ -23,10 +23,28 @@ void setup() {
 }
 
 void draw() {
-
-  yellow=false;
+ transform();
+  yellow=true;
   background(0);
+ 
 
+
+  //some test rectangles
+  fill(255);
+  rect(225, 225, 50, 50);
+  rect(245, 125, 10, 10);
+  rect(245, 25, 10, 10);
+
+  fill(255, 0, 0);
+  rect(290, 290, 20, 20);
+
+  if (yellow) fill (255, 255, 0, 100);
+  else fill(255, 255, 0);
+  rect(45, 45, 10, 10);
+}
+
+void transform() {
+  
 
     //r to reset all zooms and translates
     if (key == 'r') {
@@ -58,19 +76,6 @@ void draw() {
 
   scale( width / w, height / h);
   translate(-x, -y);
-
-  //some test rectangles
-  fill(255);
-  rect(225, 225, 50, 50);
-  rect(245, 125, 10, 10);
-  rect(245, 25, 10, 10);
-
-  fill(255, 0, 0);
-  rect(290, 290, 20, 20);
-
-  if (yellow) fill (255, 255, 0, 100);
-  else fill(255, 255, 0);
-  rect(45, 45, 10, 10);
 }
 
 void mouseWheel(MouseEvent event) {
