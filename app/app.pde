@@ -35,8 +35,7 @@ void setup() {
 }
 
 void draw() {
-  println("111");
-  noLoop();
+ 
   if (showParticles) {
     fill(0, 10);
     rect(0, 0, width, height);
