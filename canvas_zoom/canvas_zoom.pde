@@ -10,6 +10,9 @@ boolean[] keys=new boolean[2];
 float angle=0;
 float da;
 
+int zoomDir = 0;
+long lastDirChange = 0;
+
 boolean yellow=false;
 
 void setup() {
@@ -24,22 +27,6 @@ void draw() {
   yellow=false;
   background(0);
 
-  if (keyPressed) {
-    //= and - to zoom in and out on center of screen
-    if (key == '1') {
-      float zoom=.95; 
-      x += .5 * w * ( 1 - 1 / zoom );
-      y += .5 * h * ( 1 - 1 / zoom );
-      w *= 1 / zoom;
-      h *= 1 / zoom;
-    }
-    if (key == '2') {
-      float zoom=1.05;
-      x += .5 * w * ( 1 - 1 / zoom );
-      y += .5 * h * ( 1 - 1 / zoom );
-      w *= 1 / zoom;
-      h *= 1 / zoom;
-    }
 
     //r to reset all zooms and translates
     if (key == 'r') {
@@ -51,21 +38,7 @@ void draw() {
       mY=0;
       angle=0;
     }
-
-    if (key == 'q') { 
-      float[] m=mouseRotate(constrain(mouseX, 0, width), 
-      constrain(mouseY, 0, height), angle, width/2, height/2);
-      mX=m[0];
-      mY=m[1];
-      X= x + mX * w/width;
-      Y= y + mY * h/height;
-
-      println("rotated mouse = " + mX + ", " + mY);
-      if (X>45 && X<55 && Y>45 && Y<55) {
-        yellow=true;
-      }
-    }
-  }
+  
 
   //mouseDragged translation
   dpx= (panx - px) * easing;
@@ -100,42 +73,31 @@ void draw() {
   rect(45, 45, 10, 10);
 }
 
-void mousePressed() {
-
-  //// mouseEvent variable contains the current event information
-  ////double-click zoom
-  //if (mouseEvent.getClickCount()==2) {
-  //  float zoom=2;
-
-  //  float[] m=mouseRotate(constrain(mouseX, 0, width), 
-  //  constrain(mouseY, 0, height), angle, width/2, height/2);
-  //  mX=m[0];
-  //  mY=m[1];
-
-  //  X= x + mX * w/width;
-  //  Y= y + mY * h/height;
-  //  x= X - (1 / zoom) * (X - x);
-  //  y= Y - (1 / zoom) * (Y - y);
-  //  w *= 1 / zoom;
-  //  h *= 1 / zoom;
-  //}
-
-  ////right-click center and zoom
-  //if (mouseEvent.getButton()==MouseEvent.BUTTON3) {
-  //  float zoom=2;
-
-  //  float[] m=mouseRotate(constrain(mouseX, 0, width), 
-  //  constrain(mouseY, 0, height), angle, width/2, height/2);
-  //  mX=m[0];
-  //  mY=m[1];
-
-  //  X= x + mX * w/width;
-  //  Y= y + mY * h/height;
-  //  x= X - w / (2 * zoom);
-  //  y= Y - h / (2 * zoom);
-  //  w *= 1 / zoom;
-  //  h *= 1 / zoom;
-  //}
+void mouseWheel(MouseEvent event) {
+   float e = event.getCount();
+   if(e == 0) return;
+   float speed = map(e, 0, 20, 1, 1.2);
+   int scrollDir = (e >= 0) ? 1 : -1;
+  
+   if(millis() - lastDirChange > 300) {
+    if(scrollDir != zoomDir) {
+      lastDirChange = millis();
+      zoomDir = scrollDir;
+      println("change dir");
+      println(zoomDir);
+    }
+  }
+  
+  //print(zoomDir);
+  
+  //println(e);
+  float zoom = (zoomDir > 0) ? 1.01 : 0.99;
+  zoom*=speed;
+  x += .5 * w * ( 1 - 1 / zoom );
+  y += .5 * h * ( 1 - 1 / zoom );
+  w *= 1 / zoom;
+  h *= 1 / zoom;
+    
 }
 
 void mouseDragged() {
