@@ -1,5 +1,4 @@
 class Grid {
-  
   PVector[] points;
   int[] timeOff; //when to turn off in millis
   boolean[] active;
@@ -8,43 +7,36 @@ class Grid {
   
   int decay = 500;
   
-  Grid(int r, int c) {
-    points  = new PVector[r * c];
-    active  = new boolean[r * c];
-    timeOff = new int[r * c];
-    
-    spacingX = width / (r + 1);
-    spacingY = height / (c + 1);
+  Grid(int c, int r) {
+    //one dimensional arrays
+    points  = new PVector[c * r];
+    active  = new boolean[c * r];
+    timeOff = new int[c * r];
     
     int idx = 0;
     
-    for (float x = spacingX; x < width; x += spacingX) {
-      for (float y = spacingY; y < height; y += spacingY) {
-        if (idx < points.length) {
+    println(points.length);
+    for (int x = UNIT_SIZE; x <= UNIT_SIZE * c; x += UNIT_SIZE) {
+      for (int y = UNIT_SIZE; y <= UNIT_SIZE * r; y += UNIT_SIZE) {
             points[idx] = new PVector(x, y);
             active[idx] = false;
-            //timeouts.append(0);
-            idx++;
-        }
-        //points[idx] = new PVector(x, y);
-        //activePoints[idx] = false;
-        //timeouts.append(0);
-        //idx++;
+            idx++;      
       }
     }
   }
   void allOff() {
-    for(int i = 0; i < points.length; i++) {
-      if(millis() > timeOff[i]) {
-        active[i] = false;
-      }
-    }
+    //for(int i = 0; i < points.length; i++) {
+    //  if(millis() > timeOff[i]) {
+    //    active[i] = false;
+    //  }
+    //}
   }
   void turnOn(int i) {
-    active[i]  = true;
-    timeOff[i] = millis() + decay;
+    //active[i]  = true;
+    //timeOff[i] = millis() + decay;
   }
   void display() {
+ 
     allOff();
     noStroke();
     for (int i = 0; i < points.length; i++) {
@@ -53,14 +45,14 @@ class Grid {
       } else {
         fill(50);
       }
-      ellipse(points[i].x, points[i].y, ledSize, ledSize);
+      ellipse(points[i].x, points[i].y, LED_SIZE, LED_SIZE);
     }
   }
   void checkRange(PVector wp) {
-    for (int i = 0; i < points.length; i++) {
-      if (points[i].dist(wp) < range) {
-        turnOn(i);
-      }
-    }
+    //for (int i = 0; i < points.length; i++) {
+    //  if (points[i].dist(wp) < range) {
+    //    turnOn(i);
+    //  }
+    //}
   }
 }

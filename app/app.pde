@@ -1,7 +1,7 @@
 WindParticle[] windParticles;
 boolean showParticles = false;
 boolean applyGrid = true;
-boolean showRange = true;
+boolean showRange = false;
 
 int numParticles = 2;
 float boost = 10.0;
@@ -9,7 +9,7 @@ int range = 50; // particle dist to point to activate
 Grid grid;
 int ledSize = 4;
 int cols = 16;
-int rows = 16;
+int rows = 5;
 float noiseScale = 0.01/4; // increase divisor for change in pattern
 
 CanvasCam cam;
@@ -17,7 +17,7 @@ CanvasCam cam;
 void setup() {
   size(800, 800);
   
-  
+ 
   background(0);
   windParticles = new WindParticle[numParticles];
   for (int i = 0; i < numParticles; i++) {

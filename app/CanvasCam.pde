@@ -73,9 +73,11 @@ public class CanvasCam {
 
         println("Mouse Wheel");
         float count = e.getCount();
+        if(FLIP_ZOOM) count *= -1;
         if(count == 0) return;
         float speed = map(count, 0, 20, 1, 1.2);
         int scrollDir = (count >= 0) ? 1 : -1;
+        
         if(scrollDir != zoomDir) {
           if(millis() - lastDirChange > 200) {
             lastDirChange = millis();
