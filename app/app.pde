@@ -1,43 +1,44 @@
 WindParticle[] windParticles;
 boolean showParticles = true;
-boolean showRange = false;
+boolean showRange = true;
 
 PGraphics pg;
-int numParticles = 2;
+int numParticles = 200;
 float boost = 10.0;
-int range = 50; // particle dist to point to activate
+int range = 5; // particle dist to point to activate
 Grid grid;
 int ledSize = 4;
 float noiseScale = 0.01/4; // increase divisor for change in pattern
 
 CanvasCam cam;
+void settings() {
+    size(UNIT_SIZE*GRID_COLS, UNIT_SIZE*GRID_ROWS);
 
+}
 void setup() {
-  size(800, 800);
   
   rectMode(CENTER);
   background(0);
   windParticles = new WindParticle[numParticles];
   for (int i = 0; i < numParticles; i++) {
-    windParticles[i] = new WindParticle(random(width), random(height));
+    PVector p = randParticlePos();
+    windParticles[i] = new WindParticle(p.x, p.y);
   }
   ellipseMode(CENTER);
   clear();
  
   pg = createGraphics(GRID_ROWS * UNIT_SIZE, GRID_COLS * UNIT_SIZE);
-  grid = new Grid(GRID_ROWS, GRID_COLS);
+  grid = new Grid(GRID_ROWS, GRID_COLS); 
   
- 
   cam = new CanvasCam(this);
-  
 }
 
 void draw() {
  
   if (showParticles) {
-    fill(0, 10);
-    rect(0, 0, width, height);
-    //background(0, 8);
+    //fill(0, 10);
+    //rect(0, 0, width, height);
+    background(0);
   } else {
     background(0);
   }
@@ -69,8 +70,7 @@ class WindParticle {
     pos.x += cos(a) * boost;
     pos.y += sin(a) * boost;
     if (!onScreen(pos)) {
-      pos.x = random(width);
-      pos.y = random(height);
+      pos = randParticlePos();
     }
 
     grid.checkRange(pos);
@@ -81,14 +81,20 @@ class WindParticle {
       point(pos.x, pos.y);
     }
     if(showRange) {
-      noFill();
-      stroke(0,255,255, 10);
+      //noFill();
+      fill(255);
       ellipse(pos.x, pos.y, range, range);
     }
     
   }
 }
 
+PVector randParticlePos() {
+  return new PVector(random(GRID_COLS * UNIT_SIZE), random(GRID_ROWS * UNIT_SIZE));
+}
+
 boolean onScreen(PVector v) {
-  return v.x >= 0 && v.x <= width && v.y >= 0 && v.y <= height;
+  int w = GRID_COLS * UNIT_SIZE + UNIT_SIZE;
+  int h = GRID_ROWS * UNIT_SIZE + UNIT_SIZE;
+  return v.x >= -UNIT_SIZE && v.x <= w && v.y >= -UNIT_SIZE && v.y <= h;
 }

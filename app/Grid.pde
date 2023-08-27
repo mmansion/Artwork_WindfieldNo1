@@ -59,7 +59,7 @@ class Grid {
       strokeWeight(2);
       stroke(0, 255, 255, 100);
       if(tiled[i]) {
-        fill(255, 0, 0, 200);
+        fill(255, 0, 0,50);
       }
       ellipse(points[i].x, points[i].y, LED_SIZE, LED_SIZE);
       
