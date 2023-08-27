@@ -1,15 +1,13 @@
 WindParticle[] windParticles;
-boolean showParticles = false;
-boolean applyGrid = true;
+boolean showParticles = true;
 boolean showRange = false;
 
+PGraphics pg;
 int numParticles = 2;
 float boost = 10.0;
 int range = 50; // particle dist to point to activate
 Grid grid;
 int ledSize = 4;
-int cols = 16;
-int rows = 5;
 float noiseScale = 0.01/4; // increase divisor for change in pattern
 
 CanvasCam cam;
@@ -17,7 +15,7 @@ CanvasCam cam;
 void setup() {
   size(800, 800);
   
- 
+  rectMode(CENTER);
   background(0);
   windParticles = new WindParticle[numParticles];
   for (int i = 0; i < numParticles; i++) {
@@ -25,10 +23,11 @@ void setup() {
   }
   ellipseMode(CENTER);
   clear();
-  if (applyGrid) {
-    grid = new Grid(cols, rows);
-  }
+ 
+  pg = createGraphics(GRID_ROWS * UNIT_SIZE, GRID_COLS * UNIT_SIZE);
+  grid = new Grid(GRID_ROWS, GRID_COLS);
   
+ 
   cam = new CanvasCam(this);
   
 }
@@ -42,9 +41,9 @@ void draw() {
   } else {
     background(0);
   }
-  if (applyGrid) {
-    grid.display();
-  }
+
+  grid.display();
+  
   stroke(255);
   for (int i = 0; i < numParticles; i++) {
     windParticles[i].update();
@@ -73,9 +72,9 @@ class WindParticle {
       pos.x = random(width);
       pos.y = random(height);
     }
-    if (applyGrid) {
-      grid.checkRange(pos);
-    }
+
+    grid.checkRange(pos);
+    
   }
   void display() {
     if (showParticles) {
