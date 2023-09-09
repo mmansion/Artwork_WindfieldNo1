@@ -1,4 +1,3 @@
-
 #define SPEAKER_PIN 4
 #define LED_PIN 2
 
@@ -14,6 +13,7 @@ float  note_len; //4th, 8th, 16th or 32nd
 double bpms = 0.0;
 
 void setup() {
+  
   Serial.begin(115200);
   
   pinMode(SPEAKER_PIN, OUTPUT);

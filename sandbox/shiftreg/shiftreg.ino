@@ -66,7 +66,7 @@ void loop() {
       //set latch pin high- this sends data to outputs so the LEDs will light up
       digitalWrite(latchPin, HIGH);
       
-      delay(500);//wait
+      delay(100);//wait
     }
   }
   
