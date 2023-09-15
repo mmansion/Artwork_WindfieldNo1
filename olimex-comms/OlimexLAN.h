@@ -14,7 +14,7 @@
 // IMPORTANT:
 // Sending OSC formatted messages to Max requires the CNMAT OSC library's OSCMessage
 // https://github.com/CNMAT/OSC
-#include <OSCMessage.h>
+// #include <OSCMessage.h>
 
 
 //TODO: integrate
@@ -45,7 +45,7 @@ class OlimexLAN {
     void checkUDP();
 
     void sendUDP(String theMessage);
-    void sendOSC(const char *theMessage);
+    // void sendOSC(const char *theMessage);
 
     char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
@@ -232,20 +232,20 @@ void OlimexLAN::sendUDP(String theMessage) {
 
 }
 
-void OlimexLAN::sendOSC(const char *theMessage) {
+// void OlimexLAN::sendOSC(const char *theMessage) {
 
-    OSCMessage msg(theMessage);
+//     // OSCMessage msg(theMessage);
 
-    //msg.add("hello, osc."); //todo integrate command opt
+//     //msg.add("hello, osc."); //todo integrate command opt
 
-    ethUdp.beginPacket(this->remoteUdpIp, this->remoteUdpPort);
+//     ethUdp.beginPacket(this->remoteUdpIp, this->remoteUdpPort);
 
-    msg.send(ethUdp);
+//     msg.send(ethUdp);
 
-    ethUdp.endPacket();
+//     ethUdp.endPacket();
 
-    msg.empty();
-}
+//     msg.empty();
+// }
 
 
 void OlimexLAN::checkUDP() {  

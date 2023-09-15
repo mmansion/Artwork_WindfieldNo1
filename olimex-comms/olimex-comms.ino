@@ -1,5 +1,5 @@
 #include "OlimexLAN.h" //features: Wifi, Eth, OTA, UDP/OSC
-#include <Regexp.h>
+// #include <Regexp.h>
 
 char *wifi_ssid = "MANSION";
 char *wifi_pwd  = "Valley*24";
@@ -19,15 +19,14 @@ const int localUdpPort  = 7010;
 // LAN class object
 OlimexLAN *olimexLAN;
 
-#include <OSCBundle.h>
-
-
+// #include <OSCBundle.h>
 
 
 //------------------------------------------------------------
 void setup() {
 
   Serial.begin(115200);
+  Serial.print("Starting up");
 
   //------------------------------------------------------------
   // 1. setup ethernet and wifi connections

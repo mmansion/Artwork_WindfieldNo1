@@ -1,3 +1,9 @@
+/* App Objects
+  ------------------------------ */
+UdpSender udpSender;
+
+
+
 WindParticle[] windParticles;
 boolean showParticles = true;
 boolean showRange = true;
