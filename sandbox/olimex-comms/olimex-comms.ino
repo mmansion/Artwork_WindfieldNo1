@@ -1,8 +1,8 @@
 #include "OlimexLAN.h" //features: Wifi, Eth, OTA, UDP/OSC
-#include <Regexp.h>
+// #include <Regexp.h>
 
-char *wifi_ssid = "showcontrol";
-char *wifi_pwd  = "DL";
+char *wifi_ssid = "";
+char *wifi_pwd  = "";
 
 // remote communication settings (UDP/OSC)
 WiFiUDP   etheretUdp;
@@ -51,10 +51,10 @@ void setup() {
 void loop() {
 
   // in order for OTA to work, must repeatedly check
-  olimexLAN->checkOTA();
+  // olimexLAN->checkOTA();
 
   // check for incoming udp/osc messages
-  olimexLAN->checkUDP();
+  // olimexLAN->checkUDP();
   
   // you can also call olimexLAN->update(); 
   // shortcut to call both checkUDP + checkOTA
@@ -62,25 +62,25 @@ void loop() {
 
 //------------------------------------------------------------
 // register this callback with olimexUDP instance
-void onMessageReceived(String message) {
+// void onMessageReceived(String message) {
 
-  MatchState ms; //matchstate object (requirs regex lib)
+//   MatchState ms; //matchstate object (requirs regex lib)
   
-  byte maxBufLen = UDP_TX_PACKET_MAX_SIZE;
+//   byte maxBufLen = UDP_TX_PACKET_MAX_SIZE;
   
-  //search target
-  char buf [maxBufLen];
-  message.toCharArray(buf, maxBufLen);
+//   //search target
+//   char buf [maxBufLen];
+//   message.toCharArray(buf, maxBufLen);
 
-  //set target buffer
-  ms.Target(buf);
+//   //set target buffer
+//   ms.Target(buf);
 
-  // setup your own commands here:
+//   // setup your own commands here:
   
-  if( ms.Match ("/test") ) {
+//   if( ms.Match ("/test") ) {
       
-      Serial.println("received test command");
-      olimexLAN->sendOSC("received");
-  }
+//       Serial.println("received test command");
+//       olimexLAN->sendOSC("received");
+//   }
     
-}
+// }

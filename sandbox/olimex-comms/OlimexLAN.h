@@ -5,18 +5,17 @@
 #include <WiFiUdp.h>
 
 // WIFI DEPENDENCIES
-#include <WiFi.h>
-#include <ESPmDNS.h>
-#include <ArduinoOTA.h>
+// #include <WiFi.h>
+// #include <ESPmDNS.h>
+// #include <ArduinoOTA.h>
 
 // IMPORTANT:
 // Sending OSC formatted messages to Max requires the CNMAT OSC library's OSCMessage
 // https://github.com/CNMAT/OSC
-#include <OSCMessage.h>
+// #include <OSCMessage.h>
 
 bool debug_udp = true;
-
-#define UDP_TX_PACKET_MAX_SIZE 64 // Increase max packet size
+#define UDP_TX_PACKET_MAX_SIZE 86 // Increase max packet size
 
 bool eth_connected  = false;
 bool wifi_connected = false;
@@ -29,16 +28,16 @@ class OlimexLAN {
     void connectEth();
     void connectWifi(char* ssid, char* password);
 
-    void setupOTA();
+    // void setupOTA();
     void setupUDP(IPAddress remoteIp, int remotePort, int localPort);
 
     void update(); // update will check both OTA & UDP
 
-    void checkOTA();
+    // void checkOTA();
     void checkUDP();
 
     void sendUDP(String theMessage);
-    void sendOSC(const char *theMessage);
+    // void sendOSC(const char *theMessage);
 
     char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
@@ -54,7 +53,18 @@ class OlimexLAN {
     int connectTimeout = 10000;
 
     static void onLanEvent(WiFiEvent_t event) {
+      Serial.println(event);
       switch (event) {
+
+        case ARDUINO_EVENT_WIFI_AP_PROBEREQRECVED: 
+          Serial.println("\nARDUINO_EVENT_WIFI_AP_PROBEREQRECVED");
+          break;
+        case ARDUINO_EVENT_ETH_START: 
+          Serial.println("\nARDUINO_EVENT_ETH_START");
+          break;
+        case ARDUINO_EVENT_ETH_CONNECTED:
+          Serial.println("\nARDUINO_EVENT_ETH_CONNECTED");
+          break;
 
         // WIFI EVENTS -----------------------------------------
         case SYSTEM_EVENT_STA_START:
@@ -125,32 +135,34 @@ OlimexLAN::OlimexLAN() {
 //------------------------------------------------------------------
 void OlimexLAN::connectEth() {
   ETH.begin();
+
   Serial.print("Connecting to Ethernet: @MAC");
   Serial.println(ETH.macAddress());
   long startConnectTime = millis();
+
+  delay(3000);
   while(!eth_connected) {
     delay(100);
     Serial.print(".");
     if(millis() - startConnectTime > this->connectTimeout) break;
   }
   Serial.println();
-
 }
 
 //------------------------------------------------------------------
-void OlimexLAN::connectWifi(char* ssid, char* password) {
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi: @MAC: ");
-  Serial.println(WiFi.macAddress());
-  long startConnectTime = millis();
-  while(!wifi_connected) {
-    delay(100);
-    Serial.print(".");
-    if(millis() - startConnectTime > this->connectTimeout) break;
-  }
-  Serial.println();
-}
+// void OlimexLAN::connectWifi(char* ssid, char* password) {
+//   WiFi.mode(WIFI_STA);
+//   WiFi.begin(ssid, password);
+//   Serial.print("Connecting to WiFi: @MAC: ");
+//   Serial.println(WiFi.macAddress());
+//   long startConnectTime = millis();
+//   while(!wifi_connected) {
+//     delay(100);
+//     Serial.print(".");
+//     if(millis() - startConnectTime > this->connectTimeout) break;
+//   }
+//   Serial.println();
+// }
 
 //------------------------------------------------------------------
 void OlimexLAN::setupUDP(IPAddress remoteIp, int remotePort, int localPort) {
@@ -164,80 +176,80 @@ void OlimexLAN::setupUDP(IPAddress remoteIp, int remotePort, int localPort) {
   Serial.println(localPort);
 }
 
-void OlimexLAN::setupOTA() {
+// void OlimexLAN::setupOTA() {
 
-   //------------------------------------------------------------------
-  // Port defaults to 3232
-  // ArduinoOTA.setPort(3232);
+//    //------------------------------------------------------------------
+//   // Port defaults to 3232
+//   // ArduinoOTA.setPort(3232);
 
-  // Hostname defaults to esp3232-[MAC]
-  // ArduinoOTA.setHostname("myesp32");
+//   // Hostname defaults to esp3232-[MAC]
+//   // ArduinoOTA.setHostname("myesp32");
 
-  // No authentication by default
-  // ArduinoOTA.setPassword("admin");
+//   // No authentication by default
+//   // ArduinoOTA.setPassword("admin");
 
-  // Password can be set with it's md5 value as well
-  // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
-  // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
+//   // Password can be set with it's md5 value as well
+//   // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
+//   // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
 
-  ArduinoOTA
-    .onStart([]() {
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH)
-        type = "sketch";
-      else // U_SPIFFS
-        type = "filesystem";
+//   ArduinoOTA
+//     .onStart([]() {
+//       String type;
+//       if (ArduinoOTA.getCommand() == U_FLASH)
+//         type = "sketch";
+//       else // U_SPIFFS
+//         type = "filesystem";
 
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("Start updating " + type);
-    })
-    .onEnd([]() {
-      Serial.println("\nEnd");
-    })
-    .onProgress([](unsigned int progress, unsigned int total) {
-      Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-    })
-    .onError([](ota_error_t error) {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR)         Serial.println("Auth Failed");
-      else if (error == OTA_BEGIN_ERROR)   Serial.println("Begin Failed");
-      else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-      else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-      else if (error == OTA_END_ERROR)     Serial.println("End Failed");
-    });
+//       // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+//       Serial.println("Start updating " + type);
+//     })
+//     .onEnd([]() {
+//       Serial.println("\nEnd");
+//     })
+//     .onProgress([](unsigned int progress, unsigned int total) {
+//       Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+//     })
+//     .onError([](ota_error_t error) {
+//       Serial.printf("Error[%u]: ", error);
+//       if (error == OTA_AUTH_ERROR)         Serial.println("Auth Failed");
+//       else if (error == OTA_BEGIN_ERROR)   Serial.println("Begin Failed");
+//       else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+//       else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+//       else if (error == OTA_END_ERROR)     Serial.println("End Failed");
+//     });
 
-    delay(1000);
-    ArduinoOTA.begin();
-}
+//     delay(1000);
+//     ArduinoOTA.begin();
+// }
 
 
-void OlimexLAN::checkOTA() {
-  ArduinoOTA.handle();
-}
+// void OlimexLAN::checkOTA() {
+//   ArduinoOTA.handle();
+// }
 
 void OlimexLAN::update() {
-  this->checkOTA();
+  // this->checkOTA();
   this->checkUDP();
 }
 
-void OlimexLAN::sendUDP(String theMessage) {
+// void OlimexLAN::sendUDP(String theMessage) {
 
-}
+// }
 
-void OlimexLAN::sendOSC(const char *theMessage) {
+// void OlimexLAN::sendOSC(const char *theMessage) {
 
-    OSCMessage msg(theMessage);
+//     OSCMessage msg(theMessage);
 
-    //msg.add("hello, osc."); //todo integrate command opt
+//     //msg.add("hello, osc."); //todo integrate command opt
 
-    ethUdp.beginPacket(this->remoteUdpIp, this->remoteUdpPort);
+//     ethUdp.beginPacket(this->remoteUdpIp, this->remoteUdpPort);
 
-    msg.send(ethUdp);
+//     msg.send(ethUdp);
 
-    ethUdp.endPacket();
+//     ethUdp.endPacket();
 
-    msg.empty();
-}
+//     msg.empty();
+// }
 
 
 void OlimexLAN::checkUDP() {
