@@ -8,7 +8,7 @@ char *wifi_pwd  = "";
 WiFiUDP   etheretUdp;
 
 //test ip (manually set your computer to this addr to test)
-IPAddress remoteUdpIp = IPAddress(10, 1, 10, 99); 
+IPAddress remoteUdpIp = IPAddress(10, 1, 0, 8); 
 
 const int remoteUdpPort = 8020;
 const int localUdpPort  = 7010;
@@ -54,7 +54,7 @@ void loop() {
   // olimexLAN->checkOTA();
 
   // check for incoming udp/osc messages
-  // olimexLAN->checkUDP();
+  olimexLAN->checkUDP();
   
   // you can also call olimexLAN->update(); 
   // shortcut to call both checkUDP + checkOTA

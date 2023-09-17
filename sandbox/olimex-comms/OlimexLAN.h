@@ -282,7 +282,7 @@ void OlimexLAN::checkUDP() {
     Serial.println(this->packetBuffer);
     String message = String(this->packetBuffer);
 
-    this->onMessageReceived(message);
+//    this->onMessageReceived(message);
 
     this->ethUdp.flush();
   }

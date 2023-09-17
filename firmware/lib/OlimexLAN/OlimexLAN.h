@@ -51,10 +51,8 @@ class OlimexLAN {
     int connectTimeout = 10000;
 };
 //------------------------------------------------------------------
-
 // constructor: LAN Only
-OlimexLAN::OlimexLAN()
-{
+OlimexLAN::OlimexLAN() {
   if(!Serial) Serial.begin(115200);
   Serial.println("\n\n\n");
   // WiFi.onEvent(void(&onLanEvent));
@@ -67,8 +65,6 @@ OlimexLAN::OlimexLAN()
 //------------------------------------------------------------------
 void OlimexLAN::connectEth() {
   ETH.begin();
-  Serial.print("Connecting to Ethernet: @MAC");
-  Serial.println(ETH.macAddress());
   long startConnectTime = millis();
   while(!eth_connected) {
     delay(100);
@@ -76,27 +72,24 @@ void OlimexLAN::connectEth() {
     if(millis() - startConnectTime > this->connectTimeout) break;
   }
   Serial.println();
-
 }
 
 //------------------------------------------------------------------
 void OlimexLAN::connectWifi(char* ssid, char* password) {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi: @MAC: ");
-  Serial.println(WiFi.macAddress());
   long startConnectTime = millis();
   while(!wifi_connected) {
     delay(100);
     Serial.print(".");
     if(millis() - startConnectTime > this->connectTimeout) break;
   }
-  Serial.println();
 }
 
 //------------------------------------------------------------------
 void OlimexLAN::setupUDP(IPAddress remoteIp, int remotePort, int localPort) {
   Serial.println("Setting up UDP Comms");
+  delay(1000);
   this->remoteUdpIp = remoteIp;
   this->remoteUdpPort = remotePort;
 
@@ -104,6 +97,7 @@ void OlimexLAN::setupUDP(IPAddress remoteIp, int remotePort, int localPort) {
   this->ethUdp.begin(localPort);
   Serial.print("Listening on UDP port ");
   Serial.println(localPort);
+  delay(1000);
 }
 
 void OlimexLAN::setupOTA() {
@@ -183,12 +177,10 @@ void OlimexLAN::sendUDP(String theMessage) {
 
 
 void OlimexLAN::checkUDP() {
-
   int packetSize = this->ethUdp.parsePacket();
 
   if(packetSize) {
-    Serial.print("something");
-
+    Serial.println(packetSize);
     if (debug_udp) {
       Serial.print("Received packet of size ");
       Serial.println(packetSize);
@@ -212,7 +204,7 @@ void OlimexLAN::checkUDP() {
     Serial.println(this->packetBuffer);
     String message = String(this->packetBuffer);
 
-    this->onMessageReceived(message);
+    // this->onMessageReceived(message);
 
     this->ethUdp.flush();
   }
@@ -222,27 +214,29 @@ void OlimexLAN::checkUDP() {
 void OlimexLAN::onLanEvent(WiFiEvent_t event) {
   switch (event) {
   case ARDUINO_EVENT_WIFI_READY:
-    Serial.println("\nARDUINO_EVENT_WIFI_READY");
+    // Serial.println("\nARDUINO_EVENT_WIFI_READY");
     break;
   case ARDUINO_EVENT_WIFI_SCAN_DONE:
-    Serial.println("\nARDUINO_EVENT_WIFI_SCAN_DONE");
+    // Serial.println("\nARDUINO_EVENT_WIFI_SCAN_DONE");
     break;
   case ARDUINO_EVENT_WIFI_STA_START:
-    Serial.println("\nARDUINO_EVENT_WIFI_STA_START");
+    // Serial.println("\nARDUINO_EVENT_WIFI_STA_START");
     break;
   case ARDUINO_EVENT_WIFI_STA_STOP:
-    Serial.println("\nARDUINO_EVENT_WIFI_STA_STOP");
+    // Serial.println("\nARDUINO_EVENT_WIFI_STA_STOP");
     break;
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
-    Serial.println("\nARDUINO_EVENT_WIFI_STA_CONNECTED");
+    // Serial.println("\nARDUINO_EVENT_WIFI_STA_CONNECTED");
+    Serial.println("\n[WIFI]\nConnected!");
     this->wifi_connected = true; // set conn status
     break;
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    Serial.println("\nARDUINO_EVENT_WIFI_STA_DISCONNECTED");
+    // Serial.println("\nARDUINO_EVENT_WIFI_STA_DISCONNECTED");
+    Serial.println("\n[WIFI]\nDisconnected!");
     this->wifi_connected = false; // set conn status
     break;
   case ARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE:
-    Serial.println("\nARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE");
+    // Serial.println("\nARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE");
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     Serial.println("\n[WIFI]\nReceived IPv4:");
@@ -259,55 +253,57 @@ void OlimexLAN::onLanEvent(WiFiEvent_t event) {
     Serial.println(WiFi.localIPv6());
     break;
   case ARDUINO_EVENT_WIFI_STA_LOST_IP:
-    Serial.println("\nARDUINO_EVENT_WIFI_STA_LOST_IP");
+    // Serial.println("\nARDUINO_EVENT_WIFI_STA_LOST_IP");
     break;
   case ARDUINO_EVENT_WIFI_AP_START:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_START");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_START");
     break;
   case ARDUINO_EVENT_WIFI_AP_STOP:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_STOP");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_STOP");
     break;
   case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_STACONNECTED");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_STACONNECTED");
     break;
   case ARDUINO_EVENT_WIFI_AP_STADISCONNECTED:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_STADISCONNECTED");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_STADISCONNECTED");
     break;
   case ARDUINO_EVENT_WIFI_AP_STAIPASSIGNED:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_STAIPASSIGNED");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_STAIPASSIGNED");
     break;
   case ARDUINO_EVENT_WIFI_AP_PROBEREQRECVED:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_PROBEREQRECVED");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_PROBEREQRECVED");
     break;
   case ARDUINO_EVENT_WIFI_AP_GOT_IP6:
-    Serial.println("\nARDUINO_EVENT_WIFI_AP_GOT_IP6");
+    // Serial.println("\nARDUINO_EVENT_WIFI_AP_GOT_IP6");
     break;
   case ARDUINO_EVENT_WIFI_FTM_REPORT:
-    Serial.println("\nARDUINO_EVENT_WIFI_FTM_REPORT");
+    // Serial.println("\nARDUINO_EVENT_WIFI_FTM_REPORT");
     break;
   case ARDUINO_EVENT_ETH_START:
-    Serial.println("\nARDUINO_EVENT_ETH_START");
+    // Serial.println("\nARDUINO_EVENT_ETH_START");
     break;
   case ARDUINO_EVENT_ETH_STOP:
-    Serial.println("\nARDUINO_EVENT_ETH_STOP");
+    // Serial.println("\nARDUINO_EVENT_ETH_STOP");
     break;
   case ARDUINO_EVENT_ETH_CONNECTED:
-    Serial.println("\nARDUINO_EVENT_ETH_CONNECTED");
+    // Serial.println("\nARDUINO_EVENT_ETH_CONNECTED");
+    Serial.println("\n[ETHERNET]\nConnected!");
     this->eth_connected = true; // set conn status
     break;
   case ARDUINO_EVENT_ETH_DISCONNECTED:
-    Serial.println("\nARDUINO_EVENT_ETH_DISCONNECTED");
+    // Serial.println("\nARDUINO_EVENT_ETH_DISCONNECTED");
+    Serial.println("\n[ETHERNET]\nDisconnected!");
     this->eth_connected = false; // set conn status
     break;
   case ARDUINO_EVENT_ETH_GOT_IP:
-    Serial.println("\n[ETHERNET] Received IPv4:");
+    Serial.println("\n[ETHERNET]\nReceived IPv4:");
     Serial.print("@ETH MAC: ");
     Serial.println(ETH.macAddress());
     Serial.print("@ETH IPv4: ");
     Serial.println(ETH.localIP());
     break;
   case ARDUINO_EVENT_ETH_GOT_IP6:
-    Serial.println("\n[ETHERNET] Received IPv6:");
+    Serial.println("\n[ETHERNET]\nReceived IPv6:");
     Serial.print("@ETH MAC: ");
     Serial.println(ETH.macAddress());
     Serial.print("@ETH IPv6: ");
