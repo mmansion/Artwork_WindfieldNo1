@@ -1,3 +1,6 @@
+
+
+
 //TODO: check pin settings
 // i believe one of the digital outs is affecting the serial comms
 
@@ -7,6 +10,7 @@
 #define ETH_PHY_POWER 12
 #include <ETH.h>
 #include <WiFiUdp.h>
+// https : // github.com/espressif/arduino-esp32/tree/master/libraries/WiFi
 
 // WIFI DEPENDENCIES
 #include <WiFi.h>
@@ -34,7 +38,10 @@ class OlimexLAN {
     void connectEth();
     void connectWifi(char* ssid, char* password);
     void setupOTA();
-    void setupUDP(IPAddress remoteIp, int remotePort, int localPort);
+
+    // void setupUDP(IPAddress remoteIp, int remotePort, int localPort, bool multicast);
+    void setupUDP(int port, bool multicast = false);
+
     void update(); // update will check both OTA & UDP
     void checkOTA();
     void checkUDP();
@@ -45,9 +52,13 @@ class OlimexLAN {
     char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
     void (*onMessageReceived) (String message);
     WiFiUDP ethUdp; // udp obj, uses ethernet
+  
   private:
     IPAddress remoteUdpIp;
-    int remoteUdpPort;
+    // IPAddress localUdpIp;
+
+    // int remoteUdpPort;
+    int localUdpPort;
     int connectTimeout = 10000;
 };
 //------------------------------------------------------------------
@@ -87,17 +98,41 @@ void OlimexLAN::connectWifi(char* ssid, char* password) {
 }
 
 //------------------------------------------------------------------
-void OlimexLAN::setupUDP(IPAddress remoteIp, int remotePort, int localPort) {
+//setup the UDP client, defaults to multicast false
+void OlimexLAN::setupUDP(int port, bool multicast) {
+
   Serial.println("Setting up UDP Comms");
   delay(1000);
-  this->remoteUdpIp = remoteIp;
-  this->remoteUdpPort = remotePort;
 
-  // Begin listening to UDP port
-  this->ethUdp.begin(localPort);
-  Serial.print("Listening on UDP port ");
-  Serial.println(localPort);
-  delay(1000);
+  this->localUdpPort = port;
+
+  if(!multicast) { //multicast = false (default)
+
+      if(this->ethUdp.begin(this->localUdpPort)) {
+        Serial.println("UDP listener started successfully");
+        Serial.print("Listening on UDP port ");
+        Serial.println(this->localUdpPort);
+        delay(1000);
+      } else {
+        Serial.println("UDP listener failed to start");
+        delay(1000);
+      }
+
+  } else { //multicast = true
+
+    Serial.println("Multicast = TRUE");
+    delay(1000);
+
+    if (this->ethUdp.beginMulticast(ETH.localIP(), this->localUdpPort)) {
+      Serial.println("UDP Multicast listener started successfully");
+      Serial.print("Listening on UDP port ");
+      Serial.println(this->localUdpPort);
+      delay(1000);
+    } else {
+      Serial.println("UDP Multicast listener failed to start");
+      delay(1000);
+    }
+  }
 }
 
 void OlimexLAN::setupOTA() {

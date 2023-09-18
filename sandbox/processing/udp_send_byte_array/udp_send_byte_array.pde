@@ -21,63 +21,60 @@ UDP Data         -> 78 bytes
 UDP_PACKET_SIZE = 78
 */
 
-int UDP_PACKET_SIZE = 78;
+int UDP_PACKET_SIZE = 1;
 int NUM_PANELS = 39;
 int COLS_PER_PANEL = 4;
 int ROWS_PER_PANEL = 4;
 int NUM_ACT_PTS = NUM_PANELS * COLS_PER_PANEL * ROWS_PER_PANEL;//total activation points
 
 //byte array for sending active points
-char[] byteArray = new char[UDP_PACKET_SIZE]; //78 bytes
+byte[] byteArray = new byte[UDP_PACKET_SIZE]; //78 bytes
 
-
-
-//Use the bitwise or and and operators. To set a bit:
-char setBit(char byteVal, int bitPos) {
-  return char(byteVal | (1 << bitPos));
+byte setBit(byte b, int position) { //set to one
+  return (byte) (b | (1 << position));
 }
-
-//To un-set a bit:
-char clearBit(char byteVal, int bitPos) {
-  return char(byteVal & ~(1 << bitPos));
-}
-
-Boolean isBitSet(char b, int bit) {
-  return (b & (1 << bit)) != 0;
+byte unsetBit(byte b, int position) { //set to zero
+  return (byte) (b & ~(1 << position)); 
 }
 
 void setup() {
 
 
   int count = 0;
+ 
   // for each byte in the packet
   for(int theByte = 0; theByte < UDP_PACKET_SIZE; theByte++) {
+    
+       byteArray[theByte] = 0; // starting with all bits set to 0: 00000000
 
       // for each bit in the byte
       for(int bitPos = 0; bitPos < 8; bitPos++) {
         
-        int rand_int = int(random(2)); //random int 0 or 1
-        
-        // rand char '0' or '1' (representing the bit) 
-        char bit_val = Integer.toString( rand_int ).charAt(0);
+        //int rand_int = int(random(2)); //random int 0 or 1
+          
+        int rand_int;
+        if(bitPos % 2 == 0) {
+          rand_int = 1;
+        } else {
+          rand_int = 0;
+        }
         
         if(rand_int == 0) {
-          
-          byteArray[theByte] = setBit(bit_val, bitPos); //set bit to 1
+          byteArray[theByte] = setBit(byteArray[theByte], bitPos); //set bit to 1
           
         } else if (rand_int == 1) {
-          
-          byteArray[theByte] = clearBit(bit_val, bitPos); //set bit to 1
+          byteArray[theByte] = unsetBit(byteArray[theByte], bitPos); //set bit to 1
           
         }
         
-     
         
         count++;
-
       }
       
-      println( binary( byteArray[theByte], 8) );
+      //println( binary( byteArray[theByte], 8) );
+      
+      println(String.format("%8s", Integer.toBinaryString(byteArray[theByte] & 0xFF)).replace(' ', '0'));
+
       //println("Byte no. " + theByte + " = " + char(byteArray[theByte])); 
       
       
@@ -92,15 +89,12 @@ void setup() {
 void draw() {
   
 }
-
-void mousePressed() {
-
-  byte[] message = new byte[2];
-  message[0] = 0;
-  message[1] = 0;
-
-}
-
 void udpSend(String ip, int port, byte[] packet) {
   udp.send(packet, ip, port);
+}
+void mousePressed() {
+
+  println("sending bytearray");
+  println(byteArray);
+  udpSend("10.1.0.101", 7010, byteArray);
 }

@@ -111,7 +111,7 @@ void setup()
     //------------------------------------------------------------
     // 3. setup UDP communications
 
-    olimexLAN->setupUDP(remoteUdpIp, remoteUdpPort, localUdpPort);
+    olimexLAN->setupUDP(localUdpPort);
 
     // register event handler for inbound messages
     // olimexLAN->onMessageReceived = onMessageReceived;
