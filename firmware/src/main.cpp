@@ -37,7 +37,7 @@ void onMessageReceived(String message)
 WiFiUDP etheretUdp;
 
 // test ip (manually set your computer to this addr to test)
-IPAddress remoteUdpIp = IPAddress(10,1,0,10); // 192.168.86.20
+IPAddress remoteUdpIp = IPAddress(10,1,0,8); // 192.168.86.20
 
 const int remoteUdpPort = 8020;
 const int localUdpPort = 7010;

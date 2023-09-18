@@ -175,7 +175,6 @@ void OlimexLAN::sendUDP(String theMessage) {
 //     msg.empty();
 // }
 
-
 void OlimexLAN::checkUDP() {
   int packetSize = this->ethUdp.parsePacket();
 
