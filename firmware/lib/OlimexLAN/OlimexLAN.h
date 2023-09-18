@@ -209,7 +209,30 @@ void OlimexLAN::sendUDP(String theMessage) {
 
 //     msg.empty();
 // }
-
+void OlimexLAN::checkUDP() {
+ int packetSize = this->ethUdp.parsePacket();
+  if (packetSize) {
+    this->ethUdp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+    Serial.println("Received packet:");
+    
+    for (int i = 0; i < packetSize; i++) {
+      // Print each byte in binary format
+      if (packetBuffer[i] < 0b10000000) Serial.print("0"); // leading bit
+      if (packetBuffer[i] < 0b1000000)  Serial.print("0"); // second bit
+      if (packetBuffer[i] < 0b100000)   Serial.print("0"); // and so on...
+      if (packetBuffer[i] < 0b10000)    Serial.print("0");
+      if (packetBuffer[i] < 0b1000)     Serial.print("0");
+      if (packetBuffer[i] < 0b100)      Serial.print("0");
+      if (packetBuffer[i] < 0b10)       Serial.print("0");
+      Serial.print(packetBuffer[i], BIN);
+      Serial.print(" ");
+    }
+    Serial.println();  // Newline after printing all bytes
+  }
+  this->ethUdp.flush();
+  delay(10);
+}
+/*
 void OlimexLAN::checkUDP() {
   int packetSize = this->ethUdp.parsePacket();
 
@@ -244,6 +267,7 @@ void OlimexLAN::checkUDP() {
   }
   delay(100);
 }
+*/
 
 void OlimexLAN::onLanEvent(WiFiEvent_t event) {
   switch (event) {

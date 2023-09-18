@@ -21,7 +21,10 @@ UDP Data         -> 78 bytes
 UDP_PACKET_SIZE = 78
 */
 
-int UDP_PACKET_SIZE = 1;
+static String TEST_IP = "10.1.0.101";
+static int    TEST_PORT = 7010;
+
+int UDP_PACKET_SIZE = 2;
 int NUM_PANELS = 39;
 int COLS_PER_PANEL = 4;
 int ROWS_PER_PANEL = 4;
@@ -38,26 +41,21 @@ byte unsetBit(byte b, int position) { //set to zero
 }
 
 void setup() {
-
-
-  int count = 0;
- 
+  udp = new UDP( this, 8020 );
+}
+void genRandBits() {
   // for each byte in the packet
   for(int theByte = 0; theByte < UDP_PACKET_SIZE; theByte++) {
-    
        byteArray[theByte] = 0; // starting with all bits set to 0: 00000000
-
       // for each bit in the byte
       for(int bitPos = 0; bitPos < 8; bitPos++) {
-        
-        //int rand_int = int(random(2)); //random int 0 or 1
-          
-        int rand_int;
-        if(bitPos % 2 == 0) {
-          rand_int = 1;
-        } else {
-          rand_int = 0;
-        }
+        int rand_int = int(random(2)); //random int 0 or 1
+        //int rand_int;
+        //if(bitPos % 2 == 0) {
+        //  rand_int = 1;
+        //} else {
+        //  rand_int = 0;
+        //}
         
         if(rand_int == 0) {
           byteArray[theByte] = setBit(byteArray[theByte], bitPos); //set bit to 1
@@ -66,35 +64,51 @@ void setup() {
           byteArray[theByte] = unsetBit(byteArray[theByte], bitPos); //set bit to 1
           
         }
-        
-        
-        count++;
-      }
-      
-      //println( binary( byteArray[theByte], 8) );
-      
-      println(String.format("%8s", Integer.toBinaryString(byteArray[theByte] & 0xFF)).replace(' ', '0'));
-
-      //println("Byte no. " + theByte + " = " + char(byteArray[theByte])); 
-      
-      
-      // set each byte in the motor control buffer
-      //mtrCtrlBuff[theByte] = byte( map( int(activePtBuff[theByte]), 0, 255, -128, 127 ));
+      }      
+      //println(String.format("%8s", Integer.toBinaryString(byteArray[theByte] & 0xFF)).replace(' ', '0'));
     }
-    
-
-  
 }
 
 void draw() {
   
 }
+
+void sendSerialized(byte[] data) {
+  String serialized = "";
+  for (byte b : data) {
+    serialized += char(b); // Convert byte to char and append to the string
+  }
+  udp.send(serialized, TEST_IP, TEST_PORT);
+}
+
+
 void udpSend(String ip, int port, byte[] packet) {
   udp.send(packet, ip, port);
 }
 void mousePressed() {
+  genRandBits();
+  println("sending byteArray");
+  printBytes(byteArray);
+  udpSend(TEST_IP, TEST_PORT, byteArray);
+}
 
-  println("sending bytearray");
-  println(byteArray);
-  udpSend("10.1.0.101", 7010, byteArray);
+void printBytes(byte[] data) {
+ for (int i = 0; i < data.length; i++) {
+    String binaryString = byteToBinary(data[i]);
+    print(binaryString);
+    
+    // If not the last element, print a comma
+    if (i < data.length - 1) {
+      print(",");
+    }
+  }
+  println();  // To end the line after printing all bytes 
+}
+// Converts a byte to its 8-bit binary string representation
+String byteToBinary(byte b) {
+  String result = "";
+  for (int i = 7; i >= 0; i--) {
+    result += ((b >> i) & 1);
+  }
+  return result;
 }
