@@ -24,7 +24,7 @@
 
 bool debug_udp = true;
 
-#define UDP_TX_PACKET_MAX_SIZE 64 // Increase max packet size
+#define UDP_TX_PACKET_MAX_SIZE 86
 
 
 class OlimexLAN {
@@ -212,8 +212,29 @@ void OlimexLAN::sendUDP(String theMessage) {
 void OlimexLAN::checkUDP() {
  int packetSize = this->ethUdp.parsePacket();
   if (packetSize) {
-    this->ethUdp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-    Serial.println("Received packet:");
+    Serial.print("Received packet of size : ");
+    Serial.println(packetSize);
+
+    if (debug_udp) {
+      Serial.print("Received packet of size ");
+      Serial.println(packetSize);
+      Serial.print("From ");
+      IPAddress remote = this->ethUdp.remoteIP();
+      for (int i = 0; i < 4; i++)
+      {
+        Serial.print(remote[i], DEC);
+        if (i < 3)
+        {
+          Serial.print(".");
+        }
+      }
+      Serial.print(", port ");
+      Serial.println(this->ethUdp.remotePort());
+    }
+
+    // read the packet into the packetBuffer
+    this->ethUdp.read(this->packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+    Serial.println("Contents:");
     
     for (int i = 0; i < packetSize; i++) {
       // Print each byte in binary format
