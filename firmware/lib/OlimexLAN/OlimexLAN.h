@@ -1,10 +1,3 @@
-
-
-
-//TODO: check pin settings
-// i believe one of the digital outs is affecting the serial comms
-
-
 // ETHERNET DEPENDENCIES
 #define ETH_CLK_MODE ETH_CLOCK_GPIO17_OUT
 #define ETH_PHY_POWER 12
