@@ -18,14 +18,15 @@
 
 
 //pin connections- the #define tag will replace all instances of "latchPin" in your code with A1 (and so on)
-#define latchPin A1 //RCLK
-#define clockPin A0 //SRCLK
-#define dataPin A2 //SER
+//#define latchPin A1 //RCLK
+//#define clockPin A0 //SRCLK
+//#define dataPin A2 //SER
 
 //pin connections- the #define tag will replace all instances of "latchPin" in your code with A1 (and so on)
-// #define latchPin 1 //RCLK (register clock)
-// #define clockPin 3 //SRCLK (shift register clock)
-// #define dataPin  0 //SER (serial input)
+ #define dataPin  2 //SER (serial input)
+ #define latchPin 4 //RCLK (register clock)
+ #define clockPin 5 //SRCLK (shift register clock)
+ 
 //looping variables
 byte i;
 byte j;

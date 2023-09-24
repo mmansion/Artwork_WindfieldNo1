@@ -1,20 +1,13 @@
 class Panel {
 
   public  PVector origin;
-
   private PVector p1, p2, p3, p4, t1;
-
   private int     platformId;
-
   private Boolean[] activePtArr  = new Boolean[MTU * 8];
   private char[]    activePtBuff = new char[MTU];
   private byte[]    mtrCtrlBuff = new byte[MTU];
-
   public PVector[][] points = new PVector[ROWS_PER_PANEL][COLS_PER_PANEL];
-
-
   public String ip; // network address of platform
-
   Panel(int id, PVector pos, float deg, color col) {
 
     platformId = id;

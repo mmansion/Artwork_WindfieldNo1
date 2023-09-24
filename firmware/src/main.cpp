@@ -65,25 +65,27 @@ OlimexLAN *olimexLAN;
 
 // this code will light up each led in the 4x4 matrix one at a time
 
-//TODO: change pins to NOT interfere with Serial
-// pin connections- the #define tag will replace all instances of "latchPin" in your code with A1 (and so on)
-// #define latchPin 1 // RCLK
-// #define clockPin 3 // SRCLK
-// #define dataPin  0  // SER
 
-// pin connections- the #define tag will replace all instances of "latchPin" in your code with A1 (and so on)
-//  #define latchPin 1 //RCLK (register clock)
-//  #define clockPin 3 //SRCLK (shift register clock)
-//  #define dataPin  0 //SER (serial input)
-// looping variables
-byte i;
-byte j;
+#define dataPin  2 // SER //important this pin doesn't interfere with Serial
+#define latchPin 4 // RCLK
+#define clockPin 5 // SRCLK
+
+
+byte r;
+byte c;
 
 // storage variable
 byte dataToSend;
 
-void setup()
-{
+
+bool ledStates[16];
+unsigned long lastChangeTime = 0;
+bool inHighState = false;
+const unsigned long highStateDuration = 1000;  // 3 seconds
+const unsigned long period = 5000;  // 10 seconds, for example
+
+void setup() {
+
   Serial.begin(115200); 
   Serial.println("initiating...");
   delay(1000);
@@ -117,45 +119,157 @@ void setup()
     // olimexLAN->onMessageReceived = onMessageReceived;
 
     // set pins as output
-  // pinMode(latchPin, OUTPUT);
-  // pinMode(clockPin, OUTPUT);
-  // pinMode(dataPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
 }
 
+void setPoint(int r, int c) {
+  dataToSend = (1 << (r + 4)) | (15 & ~(1 << c));
+  // for example when r = 2, c = 3,
+      // dataToSend = (1 << 6) | (15 & ~(1 << 3));
+      // dataToSend = 01000000 | (15 & ~(00001000));
+      // dataToSend = 01000000 | (15 & 11110111);
+      // dataToSend = 01000000 | (15 & 11110111);
+      // dataToSend = 01000000 | 00000111;
+      // dataToSend = 01000111;
+      // the first four bits of dataToSend go to the four rows (anodes) of the LED matrix- only one is set high and the rest are set to ground
+      // the last four bits of dataToSend go to the four columns (cathodes) of the LED matrix- only one is set to ground and the rest are high
+      // this means that going through i = 0 to 3 and j = 0 to three with light up each led once
+
+  // dataToSend = (1 << (7 - r)) | (15 & ~(1 << c)); //reverse rows
+  // dataToSend = (1 << (7 - r)) | (15 & ~(1 << (3-c))); //reverse rows and columns
+
+
+  // setlatch pin low so the LEDs don't change while sending in bits
+  digitalWrite(latchPin, LOW);
+      // shift out the bits of dataToSend to the 74HC595
+  shiftOut(dataPin, clockPin, LSBFIRST, dataToSend);
+      // set latch pin high- this sends data to outputs so the LEDs will light up
+  digitalWrite(latchPin, HIGH);
+
+  randomSeed(analogRead(0));
+}
+
+int row_inc = 0;
+int col_inc = 0;
+
+void turnOnLED(int r, int c) {
+    byte dataToSend = (1 << (r + 4)) | (15 & ~(1 << c));
+    // Send dataToSend to your multiplexer or LED driver.
+    // The exact method will depend on your hardware setup.
+     // setlatch pin low so the LEDs don't change while sending in bits
+    digitalWrite(latchPin, LOW);
+        // shift out the bits of dataToSend to the 74HC595
+    shiftOut(dataPin, clockPin, LSBFIRST, dataToSend);
+        // set latch pin high- this sends data to outputs so the LEDs will light up
+    digitalWrite(latchPin, HIGH);
+}
+
+void iterateOverLEDs() {
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            turnOnLED(r, c);
+            delay(100); // Delay for 100ms to see the LED change. Adjust as needed.
+        }
+    }
+}
+
+byte ledValues[16] = {
+  135, 139, 141, 142,
+  71, 75, 77, 78,
+  39, 43, 45, 46,
+  23, 27, 29, 30
+};
+
+void setRandomValues() {
+  for (int i = 0; i < 16; i++) {
+    ledStates[i] = (random(100) < 25) ? 1 : 0; // 25% chance of being 1, 75% chance of being 0
+  }
+}
+
+
+void clear() {
+  digitalWrite(latchPin, LOW);
+  // shift out the bits of dataToSend to the 74HC595
+  shiftOut(dataPin, clockPin, LSBFIRST, 0b00000000);
+  // set latch pin high- this sends data to outputs so the LEDs will light up
+  digitalWrite(latchPin, HIGH);
+}
+void setAllHigh() {
+  for (int i = 0; i < 16; i++) {
+    ledStates[i] = 1;
+  }
+}
+void setAllLow() {
+  for (int i = 0; i < 16; i++) {
+    ledStates[i] = 0;
+  }
+}
+float t = 1;
+float tt = 50;
 void loop() {
+
+  // Serial.println("looping...");
+
   olimexLAN->checkUDP();
+  // iterateOverLEDs();
 
-  return;//disable loop
+  //iterate over ledValues
+  for (int i = 0; i < 16; i++) {
+    if(ledStates[i] == 1) {
+      // setlatch pin low so the LEDs don't change while sending in bits
+      digitalWrite(latchPin, LOW);
+          // shift out the bits of dataToSend to the 74HC595
+      shiftOut(dataPin, clockPin, LSBFIRST, ledValues[i]);
+          // set latch pin high- this sends data to outputs so the LEDs will light up
+      digitalWrite(latchPin, HIGH);
+      delay(t);
+    } else {
+      delay(t);
+    }
+    
+    // delay(1000);
+  }
+  clear();
+  delay(tt);
+  
+  unsigned long currentTime = millis();
+  
+  if (!inHighState && currentTime - lastChangeTime > period) {
+    lastChangeTime = currentTime;
+    inHighState = true;
+  } else if (inHighState && currentTime - lastChangeTime > highStateDuration) {
+    lastChangeTime = currentTime;
+    inHighState = false;
+  }
 
-  // for (i = 0; i < 4; i++)
+  if(!inHighState) {
+    setRandomValues();
+  } else {
+    setAllLow();
+    // setAllHigh();
+  }
+  
+  // delay(100);
+
+  // for (r = 0; r < 4; r++)
   // {
-
-  //   for (j = 0; j < 4; j++)
+  //   for (c = 0; c < 4; c++)
   //   {
-
-  //     // bit manipulation (more info at http://arduino.cc/en/Reference/Bitshift ,  http://arduino.cc/en/Reference/BitwiseXorNot , and http://arduino.cc/en/Reference/BitwiseAnd)
-  //     dataToSend = (1 << (i + 4)) | (15 & ~(1 << j)); // preprare byte (series of 8 bits) to send to 74HC595
-  //     // for example when i =2, j = 3,
-  //     // dataToSend = (1 << 6) | (15 & ~(1 << 3));
-  //     // dataToSend = 01000000 | (15 & ~(00001000));
-  //     // dataToSend = 01000000 | (15 & 11110111);
-  //     // dataToSend = 01000000 | (15 & 11110111);
-  //     // dataToSend = 01000000 | 00000111;
-  //     // dataToSend = 01000111;
-  //     // the first four bits of dataToSend go to the four rows (anodes) of the LED matrix- only one is set high and the rest are set to ground
-  //     // the last four bits of dataToSend go to the four columns (cathodes) of the LED matrix- only one is set to ground and the rest are high
-  //     // this means that going through i = 0 to 3 and j = 0 to three with light up each led once
-
-  //     // setlatch pin low so the LEDs don't change while sending in bits
-  //     digitalWrite(latchPin, LOW);
-  //     // shift out the bits of dataToSend to the 74HC595
-  //     shiftOut(dataPin, clockPin, LSBFIRST, dataToSend);
-  //     // set latch pin high- this sends data to outputs so the LEDs will light up
-  //     digitalWrite(latchPin, HIGH);
-
-  //     delay(100); // wait
+  //     setPoint(r, c);
+  //     delay(10);
   //   }
   // }
+  // byte value = 0b11110000;
+  // // setlatch pin low so the LEDs don't change while sending in bits
+  // digitalWrite(latchPin, LOW);
+  //     // shift out the bits of dataToSend to the 74HC595
+  // shiftOut(dataPin, clockPin, LSBFIRST, value);
+  //     // set latch pin high- this sends data to outputs so the LEDs will light up
+  // digitalWrite(latchPin, HIGH);
+ 
 }
+
 
 
