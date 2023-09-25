@@ -1,6 +1,18 @@
 #include <Arduino.h>
+//-----------------------------------------------
+//PIN DEFINITIONS
+#define dataPin  2 // SER
+#define latchPin 4 // RCLK
+#define clockPin 5 // SRCLK
+//-----------------------------------------------
+#include <iostream>
+
 // #include "OlimexLAN.h" //features: Wifi, Eth, OTA, UDP/OSC
 #include <OlimexLAN.h>
+#include <MatrixControl.h>
+//-----------------------------------------------
+unsigned char bytes[78]; //bytes set states of 16 points
+
 //-----------------------------------------------
 // setup OlimexLAN
 // char *wifi_ssid = "";
@@ -47,29 +59,9 @@ const int localUdpPort = 7010;
 // LAN class object
 OlimexLAN *olimexLAN;
 
-// LED TEST w/ 74HC595
-// by Amanda Ghassaei 2012
-// https://www.instructables.com/id/Multiplexing-with-Arduino-and-the-74HC595/
-
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-// this code will light up each led in the 4x4 matrix one at a time
-
-
 #define dataPin  2 // SER //important this pin doesn't interfere with Serial
 #define latchPin 4 // RCLK
 #define clockPin 5 // SRCLK
-
 
 byte r;
 byte c;
@@ -90,13 +82,14 @@ void setup() {
   Serial.println("initiating...");
   delay(1000);
 
+  //set bytes all to 0
+  memset(bytes, 0, sizeof(bytes));
+
   //------------------------------------------------------------
   // 1. setup ethernet and wifi connections
 
   // olimexLAN = new OlimexLAN(wifi_ssid, wifi_pwd);
-
   olimexLAN = new OlimexLAN();
-
   olimexLAN->connectEth();
   // olimexLAN->connectWifi(wifi_ssid, wifi_pwd);
 
@@ -104,24 +97,33 @@ void setup() {
   //   delay(100);
   //   Serial.print(".");
   // }
+  //------------------------------------------------------------
+  // 2. setup "over the air" programming (works for eth or wifi)
 
-    //------------------------------------------------------------
-    // 2. setup "over the air" programming (works for eth or wifi)
+  // olimexLAN->setupOTA();
 
-    // olimexLAN->setupOTA();
+  //------------------------------------------------------------
+  // 3. setup UDP communications
+  olimexLAN->setupUDP(localUdpPort);
 
-    //------------------------------------------------------------
-    // 3. setup UDP communications
+  // register event handler for inbound messages
+  // olimexLAN->onMessageReceived = onMessageReceived;
 
-    olimexLAN->setupUDP(localUdpPort);
 
-    // register event handler for inbound messages
-    // olimexLAN->onMessageReceived = onMessageReceived;
-
-    // set pins as output
+  // set pins as output
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
+}
+
+void updateLedStates(bool ledStates[16], unsigned char bytes[78], int n) {
+    for(int i = 0; i < 16; i++) {
+        // Determine which byte to use: n or n+1
+        int byteIndex = n + (i / 8);
+        // Calculate the index within the byte
+        int bitIndex = i % 8;
+        ledStates[i] = (bytes[byteIndex] & (1 << bitIndex)) != 0;
+    }
 }
 
 void setPoint(int r, int c) {
@@ -206,33 +208,30 @@ void setAllLow() {
     ledStates[i] = 0;
   }
 }
-float t = 1;
-float tt = 50;
+
+
 void loop() {
+  // -----------------------------------------------
+  
+  // Initialize some example byte values
+  bytes[2] = 0b11111111;
+  bytes[3] = 0b10000001;
+
+  updateLedStates(ledStates, bytes, 2);
+
+  // Output the ledStates to verify
+  for(int i = 0; i < 16; i++) {
+    std::cout << "LED " << i << ": " << (ledStates[i] ? "ON" : "OFF") << std::endl;
+  }
+
+  // -----------------------------------------------
 
   // Serial.println("looping...");
 
   olimexLAN->checkUDP();
   // iterateOverLEDs();
 
-  //iterate over ledValues
-  for (int i = 0; i < 16; i++) {
-    if(ledStates[i] == 1) {
-      // setlatch pin low so the LEDs don't change while sending in bits
-      digitalWrite(latchPin, LOW);
-          // shift out the bits of dataToSend to the 74HC595
-      shiftOut(dataPin, clockPin, LSBFIRST, ledValues[i]);
-          // set latch pin high- this sends data to outputs so the LEDs will light up
-      digitalWrite(latchPin, HIGH);
-      delay(t);
-    } else {
-      delay(t);
-    }
-    
-    // delay(1000);
-  }
-  clear();
-  delay(tt);
+  
   
   unsigned long currentTime = millis();
   
