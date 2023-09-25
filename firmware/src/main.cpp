@@ -130,6 +130,11 @@ float lerp(float a, float b, float t) {
 }
 //------------------------------------------------------------
 void loop() {
+
+  //TODO: incorporate speed control into the UDP messaging
+  // make matrixControl refresh based on the speed of messaging
+  // completely reactive to the udp onMessage handler, and its frequency
+
   olimexLAN->checkUDP(); //check for messages
 
   float frequency = 1000.0; //set high
