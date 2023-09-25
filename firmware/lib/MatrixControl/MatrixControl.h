@@ -4,66 +4,99 @@
 
 class MatrixControl {
     private:
-        float delay_after_show = 1;
-        float delay_after_all = 50;
+        float ms_delay = 1;
 
         //array of 16 bools
         bool states[16];
 
-        //16 ints that represent the byte value for controlling the matrix
+        // 16 byte values (in decimal) are the 'addresses' for
+        // activating each point in the multiplexed matrix        
         byte points[16] = {
             135, 139, 141, 142,
             71,   75,  77,  78,
             39,   43,  45,  46,
             23,   27,  29,  30
         };
+        void _clear();
+        void _show(uint8_t value);
+
     public:
         MatrixControl();
         ~MatrixControl();
-        void display();
+        void setup(float ms_delay);
+        void display(); //must be called to display changes from update fns
+
+        //update functions:
         void update(unsigned char bytes[78], int n);
-        void clear();
-        void show(uint8_t value);
+        void setAllHigh();
+        void setAllLow();
 };
 
-void MatrixControl::clear() {
-    this->show(0b00000000);
-}
+MatrixControl::MatrixControl(/* args */) {}
+MatrixControl::~MatrixControl() {}
 
-MatrixControl::MatrixControl(/* args */) {
+void MatrixControl::setup(float ms_delay) {
+    this->ms_delay = ms_delay;
     //use memset to fill states with 0s
     memset(states, 0, sizeof(states));
 }
 
-MatrixControl::~MatrixControl() {}
+void MatrixControl::_clear() {
+    this->_show(0b00000000);
+}
+
+void MatrixControl::setAllHigh() {
+  for (int i = 0; i < 16; i++) {
+    this->states[i] = 1;
+  }
+}
+void MatrixControl::setAllLow() {
+  for (int i = 0; i < 16; i++) {
+    this->states[i] = 0;
+  }
+}
 
 void MatrixControl::update(unsigned char bytes[78], int n) {
+    //print byte in binary
+    // Serial.print("byte: ");
+    // Serial.println(bytes[n], BIN);
+    // Serial.print("byte: ");
+    // Serial.println(bytes[n+1], BIN);
+
     for(int i = 0; i < 16; i++) {
         // determine which byte to use: n or n+1
         int byteIndex = n + (i / 8);
         // calc the index within the byte
-        int bitIndex = i % 8;
+        int bitIndex = 7 - (i % 8); // reverse the bit index
+
+        //print each bit in the byte with its index:
+        // Serial.print("bit ");
+        // Serial.print(i);
+        // Serial.print(": ");
+        // Serial.println((bytes[byteIndex] & (1 << bitIndex)) != 0);
         this->states[i] = (bytes[byteIndex] & (1 << bitIndex)) != 0;
     }
+
 }
 void MatrixControl::display() {
     //iterate over ledValues
     for (int i = 0; i < 16; i++) {
         if(this->states[i] == 1) {
-            this->show(this->points[i]);
+            this->_show(this->points[i]);
         } else {
-            delay(this->delay_after_show);
+            delay(this->ms_delay);
         }
     }
-    clear();
+    _clear();
 //   delay(this->delay_after_all);
 }
-void MatrixControl::show(uint8_t value) {
+
+void MatrixControl::_show(uint8_t value) {
     // setlatch pin low so the LEDs don't change while showing in bits
-    digitalWrite(latchPin, LOW);
+    digitalWrite(LATCH_PIN, LOW);
     // shift out the bits of dataToSend to the shift register (SN74AHCT595N)
-    shiftOut(dataPin, clockPin, LSBFIRST, value);
+    shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, value);
     // set latch pin high- this shows data to outputs so the LEDs will light up
-    digitalWrite(latchPin, HIGH);
-    delay(this->delay_after_show);
+    digitalWrite(LATCH_PIN, HIGH);
+    delay(this->ms_delay);
 }
