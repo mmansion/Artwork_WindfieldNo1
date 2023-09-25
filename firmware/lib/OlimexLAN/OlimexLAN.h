@@ -18,10 +18,21 @@
 bool debug_udp = true;
 
 #define UDP_TX_PACKET_MAX_SIZE 86
+/*
+Total required -> 86 byte MTU
 
+UDP Header -> 8 bytes
+Source port - 2 bytes
+Destination port - 2 bytes
+Length - 2 bytes: This is the length of the UDP header and the payload/data. The minimum value for this field is 8 bytes (which is the length of the header itself, meaning no data).
+Checksum - 2 bytes: This is used for error-checking the header and data. It's optional in IPv4 but mandatory in IPv6.
+I’ll be using IPv4 for simplicity 
+
+UDP Data -> 78 bytes
+39 panels x 16 points = 624 bits / 8 (8 bits per 1 byte) = 78 bytes.
+*/
 
 class OlimexLAN {
-
   public:
     OlimexLAN();
 
@@ -43,7 +54,9 @@ class OlimexLAN {
 
     // void sendOSC(const char *theMessage);
     char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
-    void (*onMessageReceived) (String message);
+    void (*onMessageReceived) (String message) = nullptr;
+    void (*onConnect) (String ip) = nullptr;
+
     WiFiUDP ethUdp; // udp obj, uses ethernet
   
   private:
@@ -129,7 +142,6 @@ void OlimexLAN::setupUDP(int port, bool multicast) {
 }
 
 void OlimexLAN::setupOTA() {
-
    //------------------------------------------------------------------
   // Port defaults to 3232
   // ArduinoOTA.setPort(3232);
@@ -151,7 +163,6 @@ void OlimexLAN::setupOTA() {
         type = "sketch";
       else // U_SPIFFS
         type = "filesystem";
-
       // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
       Serial.println("Start updating " + type);
     })
@@ -244,6 +255,13 @@ void OlimexLAN::checkUDP() {
     Serial.println();  // Newline after printing all bytes
   }
   this->ethUdp.flush();
+
+  // if(this->onMessageReceived != nullptr) {
+  //   this->onMessageReceived(String(this->packetBuffer));
+  // } else {
+  //   Serial.println("onMessageReceived callback not set");
+  // }
+
   delay(10);
 }
 /*
@@ -373,6 +391,11 @@ void OlimexLAN::onLanEvent(WiFiEvent_t event) {
     Serial.println(ETH.macAddress());
     Serial.print("@ETH IPv4: ");
     Serial.println(ETH.localIP());
+    if(this->onConnect != nullptr) {
+      this->onConnect(ETH.localIP().toString());
+    } else {
+      Serial.println("onConnect callback not set");
+    }
     break;
   case ARDUINO_EVENT_ETH_GOT_IP6:
     Serial.println("\n[ETHERNET]\nReceived IPv6:");

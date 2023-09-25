@@ -4,7 +4,11 @@
 
 class MatrixControl {
     private:
-        float ms_delay = 1;
+        int id = 0; //index-id, sculpture panel's id based on ip address
+
+        //represents sculpture panel ips in range 10.0.1.101 - 10.0.1.139:
+        String ips[NUM_MCU];
+        float ms_delay = 0.5;
 
         //array of 16 bools
         bool states[16];
@@ -19,6 +23,7 @@ class MatrixControl {
         };
         void _clear();
         void _show(uint8_t value);
+        int _startingIndex();
 
     public:
         MatrixControl();
@@ -27,9 +32,10 @@ class MatrixControl {
         void display(); //must be called to display changes from update fns
 
         //update functions:
-        void update(unsigned char bytes[78], int n);
+        void update(unsigned char bytes[78]);
         void setAllHigh();
         void setAllLow();
+        void setID(String ip);
 };
 
 MatrixControl::MatrixControl(/* args */) {}
@@ -39,6 +45,11 @@ void MatrixControl::setup(float ms_delay) {
     this->ms_delay = ms_delay;
     //use memset to fill states with 0s
     memset(states, 0, sizeof(states));
+
+    //generate ips in range 10.1.0.101 - 10.1.0.139 (39 panels)
+    for (int i = 0; i < NUM_MCU; i++) {
+        ips[i] = "10.0.1." + String(101 + i);
+    }
 }
 
 void MatrixControl::_clear() {
@@ -55,28 +66,15 @@ void MatrixControl::setAllLow() {
     this->states[i] = 0;
   }
 }
-
-void MatrixControl::update(unsigned char bytes[78], int n) {
-    //print byte in binary
-    // Serial.print("byte: ");
-    // Serial.println(bytes[n], BIN);
-    // Serial.print("byte: ");
-    // Serial.println(bytes[n+1], BIN);
-
+void MatrixControl::update(unsigned char bytes[78]) {
+    int n = this->_startingIndex(); //returns starting index in the byte array
     for(int i = 0; i < 16; i++) {
         // determine which byte to use: n or n+1
         int byteIndex = n + (i / 8);
         // calc the index within the byte
         int bitIndex = 7 - (i % 8); // reverse the bit index
-
-        //print each bit in the byte with its index:
-        // Serial.print("bit ");
-        // Serial.print(i);
-        // Serial.print(": ");
-        // Serial.println((bytes[byteIndex] & (1 << bitIndex)) != 0);
         this->states[i] = (bytes[byteIndex] & (1 << bitIndex)) != 0;
     }
-
 }
 void MatrixControl::display() {
     //iterate over ledValues
@@ -88,9 +86,7 @@ void MatrixControl::display() {
         }
     }
     _clear();
-//   delay(this->delay_after_all);
 }
-
 void MatrixControl::_show(uint8_t value) {
     // setlatch pin low so the LEDs don't change while showing in bits
     digitalWrite(LATCH_PIN, LOW);
@@ -100,3 +96,25 @@ void MatrixControl::_show(uint8_t value) {
     digitalWrite(LATCH_PIN, HIGH);
     delay(this->ms_delay);
 }
+
+void MatrixControl::setID(String ip) {
+  // get last part of ip
+  String lastPart = ip.substring(ip.lastIndexOf(".") + 1);
+  // convert to int
+  int lastPartInt = lastPart.toInt();
+  // subtract 101 from last part to get index
+  int id = lastPartInt - 101;
+  Serial.println("setting matrix id to: " + String(id));
+  this->id = id;
+
+}
+
+// get starting index in the byte array
+int MatrixControl::_startingIndex() {
+  // multiply the mcu index by 2 to get the starting index in the byte array
+  return 2 * this->id;
+}
+
+
+
+
