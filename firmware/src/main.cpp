@@ -52,15 +52,15 @@ void onMessageReceived(unsigned char* buffer, int bufferSize) {
     bytes[i] = buffer[i];
   }
 
-  //debug: remove me
-  Serial.println("Message contents:");
-  for (int i = 0; i < bufferSize; i++) {
-    for (int j = 7; j >= 0; j--) {
-        Serial.print(bitRead(bytes[i], j));
-      }
-      // Serial.print(bytes[i], BIN);
-      Serial.print(",");
-    }
+  // debug bytes received:
+  // Serial.println("Message contents:");
+  // for (int i = 0; i < bufferSize; i++) {
+  //   for (int j = 7; j >= 0; j--) {
+  //     Serial.print(bitRead(bytes[i], j));
+  //    }
+  //    // Serial.print(bytes[i], BIN);
+  //   Serial.print(",");
+  // }
 
 }
 void onConnect(String ip) {
@@ -81,8 +81,8 @@ void setup() {
   //set bytes all to 0
   memset(bytes, 0, sizeof(bytes));
   // Initialize some example byte values
-  bytes[2] = 0b00000000;
-  bytes[3] = 0b00001000;
+  // bytes[2] = 0b00000000;
+  // bytes[3] = 0b00001000;
 
   //-----------------------
   // Setup olimexLAN
@@ -153,6 +153,8 @@ void loop() {
   // completely reactive to the udp onMessage handler, and its frequency
 
   olimexLAN->checkUDP(); //check for messages
+  matrixControl.update(bytes);
+  matrixControl.display();  
 
   return;
 

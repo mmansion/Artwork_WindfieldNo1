@@ -1,10 +1,13 @@
 //---------------------------------------------
+static int MCU_ID = 1;  //0-38
+
 // UDP
 import hypermedia.net.*;
 UDP udp;  // define the UDP object
 int UDP_PACKET_SIZE = 78;
-static String  TEST_IP = "10.1.0.101";
-static int     TEST_PORT = 7010;
+static int UDP_PORT = 7010;
+
+String[] ipAddresses = new String[39];
 
 //byte array for sending active points
 //39 * 16 = 424 bits / 8 = 78 bytes
@@ -30,6 +33,11 @@ void setup() {
   // UDP Setup
   udp = new UDP(this, 8020);
   
+  // populate IP addresses
+  for (int i = 0; i < ipAddresses.length; i++) {
+    ipAddresses[i] = "10.1.0." + (101 + i);
+  }
+  
   // GUI SETUP
   circleDiameter = width / 5; // Calculate the diameter of each circle
   // Initialize the circles and clicked states
@@ -46,25 +54,39 @@ void setup() {
 byte[] status = new byte[2]; // byte array to hold the status of each circle
 
 void updateStatus() {
-   // Initialize the bytes to 0
-  byteArray[0] = 0;
-  byteArray[1] = 0;
+  int startIndex = MCU_ID * 2;
+  println("Start index = " + startIndex);
+  // Check if startIndex and startIndex+1 are within the bounds of the array
+  if (startIndex < 0 || startIndex + 1 >= byteArray.length) {
+    println("Invalid start index.");
+    return; // Exit the function if startIndex is out of bounds
+  }
+
+  // Initialize the specified bytes to zero
+  byteArray[startIndex] = 0;
+  byteArray[startIndex + 1] = 0;
 
   // Update the bits based on the clicked array
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
       if (clicked[j][i] || hovered[j][i]) { // notice the swapped indices
         // Calculate the index of the byte and the bit within that byte
-        int index = i * cols + j; // changed from i * rows + j
-        int byteIndex = index / 8;
+        int index = i * cols + j;
+        int byteIndex = startIndex + index / 8;
         int bitIndex = index % 8;
+
+        // Additional check to prevent ArrayIndexOutOfBoundsException
+        if (byteIndex >= byteArray.length) {
+          println("Byte index out of bounds.");
+          return; // Exit the function if byteIndex is out of bounds
+        }
 
         // Set the bit to 1
         byteArray[byteIndex] |= (1 << (7 - bitIndex)); // notice the 7 - bitIndex
       }
     }
   }
-  return;
+   return;
   // Print the status bytes in binary format
   //for (int i = 0; i < status.length; i++) {
   //  printByteInBinary(status[i]);
@@ -96,11 +118,10 @@ void draw() {
   //genRandBits();
  
   
-  
   updateStatus(); // Update the status bytes after drawing
-  println("sending byteArray");
+  println("sending byteArray to " + ipAddresses[MCU_ID]);
   printBytes(byteArray);
-  udpSend(TEST_IP, TEST_PORT, byteArray);
+  udpSend(ipAddresses[MCU_ID], UDP_PORT, byteArray);
 }
 void mousePressed() {
   for (int i = 0; i < cols; i++) {

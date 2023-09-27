@@ -15,7 +15,7 @@
 // https://github.com/CNMAT/OSC
 // #include <OSCMessage.h>
 
-bool debug_udp = true;
+bool debug_udp = false;
 
 #define UDP_TX_PACKET_MAX_SIZE 86
 /*
@@ -28,7 +28,7 @@ Length - 2 bytes: This is the length of the UDP header and the payload/data. The
 Checksum - 2 bytes: This is used for error-checking the header and data. It's optional in IPv4 but mandatory in IPv6.
 I’ll be using IPv4 for simplicity 
 
-UDP Data -> 78 bytes
+UDP Data -> 78 bytes (this is what our buffer is set to)
 39 panels x 16 points = 624 bits / 8 (8 bits per 1 byte) = 78 bytes.
 */
 
@@ -238,7 +238,6 @@ void OlimexLAN::checkUDP() {
     } else {
       Serial.println("onMessageReceived callback not set");
     }
-    
     delay(10);
   }
   this->ethUdp.flush();
