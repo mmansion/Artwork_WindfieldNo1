@@ -30,7 +30,8 @@ double bpms = 0.0;
 #include <OlimexLAN.h>
 #include <MatrixControl.h>
 //-----------------------------------------------
-unsigned char bytes[78]; //bytes set states of 16 points
+const int BUFFER_SIZE = 78;
+unsigned char bytes[BUFFER_SIZE]; //bytes set states of 16 points
 
 // remote communication settings (UDP/OSC)
 IPAddress remoteUdpIp = IPAddress(10,1,0,8); //receiver cpu
@@ -43,8 +44,24 @@ MatrixControl matrixControl;
 
 //------------------------------------------------------------
 // register this callback with olimexUDP instance
-void onMessageReceived(String message) {
-  Serial1.println("onMessageReceived: " + message);
+void onMessageReceived(unsigned char* buffer, int bufferSize) {
+     // Ensure that bufferSize does not exceed MAX_SIZE to avoid overflow.
+  int sizeToCopy = (bufferSize > BUFFER_SIZE) ? BUFFER_SIZE : bufferSize;
+
+  for (int i = 0; i < sizeToCopy; i++) {
+    bytes[i] = buffer[i];
+  }
+
+  //debug: remove me
+  Serial.println("Message contents:");
+  for (int i = 0; i < bufferSize; i++) {
+    for (int j = 7; j >= 0; j--) {
+        Serial.print(bitRead(bytes[i], j));
+      }
+      // Serial.print(bytes[i], BIN);
+      Serial.print(",");
+    }
+
 }
 void onConnect(String ip) {
   Serial.println("onConnect: " + ip);
@@ -137,6 +154,8 @@ void loop() {
 
   olimexLAN->checkUDP(); //check for messages
 
+  return;
+
   float frequency = 1000.0; //set high
   
   long time = millis();
@@ -147,7 +166,6 @@ void loop() {
     last_period_start = time;
 
   } else if(started_period && time - last_period_start < period_duration) {
-    Serial.println("in period");
 
     // Generate Perlin noise value
     uint8_t noiseValue = inoise8(x, 0);

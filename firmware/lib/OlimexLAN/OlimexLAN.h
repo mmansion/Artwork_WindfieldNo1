@@ -54,7 +54,7 @@ class OlimexLAN {
 
     // void sendOSC(const char *theMessage);
     char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
-    void (*onMessageReceived) (String message) = nullptr;
+    void (*onMessageReceived) (unsigned char* buffer, int bufferSize) = nullptr;
     void (*onConnect) (String ip) = nullptr;
 
     WiFiUDP ethUdp; // udp obj, uses ethernet
@@ -190,29 +190,15 @@ void OlimexLAN::checkOTA() {
   ArduinoOTA.handle();
 }
 
-void OlimexLAN::update() {
-  this->checkOTA();
-  this->checkUDP();
-}
+// void OlimexLAN::update() {
+//   this->checkOTA();
+//   this->checkUDP();
+// }
 
 void OlimexLAN::sendUDP(String theMessage) {
 
 }
 
-// void OlimexLAN::sendOSC(const char *theMessage) {
-
-//     OSCMessage msg(theMessage);
-
-//     //msg.add("hello, osc."); //todo integrate command opt
-
-//     ethUdp.beginPacket(this->remoteUdpIp, this->remoteUdpPort);
-
-//     msg.send(ethUdp);
-
-//     ethUdp.endPacket();
-
-//     msg.empty();
-// }
 void OlimexLAN::checkUDP() {
  int packetSize = this->ethUdp.parsePacket();
   if (packetSize) {
@@ -235,34 +221,27 @@ void OlimexLAN::checkUDP() {
       Serial.print(", port ");
       Serial.println(this->ethUdp.remotePort());
     }
-
     // read the packet into the packetBuffer
     this->ethUdp.read(this->packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-    Serial.println("Contents:");
-    
-    for (int i = 0; i < packetSize; i++) {
-      // Print each byte in binary format
-      if (packetBuffer[i] < 0b10000000) Serial.print("0"); // leading bit
-      if (packetBuffer[i] < 0b1000000)  Serial.print("0"); // second bit
-      if (packetBuffer[i] < 0b100000)   Serial.print("0"); // and so on...
-      if (packetBuffer[i] < 0b10000)    Serial.print("0");
-      if (packetBuffer[i] < 0b1000)     Serial.print("0");
-      if (packetBuffer[i] < 0b100)      Serial.print("0");
-      if (packetBuffer[i] < 0b10)       Serial.print("0");
-      Serial.print(packetBuffer[i], BIN);
-      Serial.print(" ");
+
+    /*
+    If you are sure that the conversion is safe 
+    (i.e., the char array will not hold any negative values), 
+    you can use a reinterpret_cast to explicitly convert the char* 
+    to an unsigned char*:
+    */
+    unsigned char* uBuffer = reinterpret_cast<unsigned char*>(this->packetBuffer);
+   
+    // Serial.println();  // Newline after printing all bytes
+    if(this->onMessageReceived != nullptr) {
+      this->onMessageReceived(uBuffer, packetSize);
+    } else {
+      Serial.println("onMessageReceived callback not set");
     }
-    Serial.println();  // Newline after printing all bytes
+    
+    delay(10);
   }
   this->ethUdp.flush();
-
-  // if(this->onMessageReceived != nullptr) {
-  //   this->onMessageReceived(String(this->packetBuffer));
-  // } else {
-  //   Serial.println("onMessageReceived callback not set");
-  // }
-
-  delay(10);
 }
 /*
 void OlimexLAN::checkUDP() {
