@@ -29,10 +29,11 @@ void loop() {
 
     // read wind
     int windADunits = analogRead(OutPin);
-    // Serial.print("RW ");   // print raw A/D for debug
-    // Serial.print(windADunits);
-    // Serial.print("\t");
-    
+     Serial.print("RW ");   // print raw A/D for debug
+     Serial.print(windADunits);
+     Serial.println("");
+     delay(750);
+    return;
     
     // wind formula derived from a wind tunnel data, annemometer and some fancy Excel regressions
     // this scalin doesn't have any temperature correction in it yet
@@ -58,6 +59,3 @@ void loop() {
     Serial.println(" C");
     delay(750);
 }
-
-
-
