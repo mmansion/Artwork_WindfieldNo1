@@ -42,9 +42,14 @@ const int localUdpPort  = 7010;
 OlimexLAN *olimexLAN;
 MatrixControl matrixControl;
 
+long lastMessageReceivedTime = 0;
+int messageTimeout = 1000; //ms
+
 //------------------------------------------------------------
 // register this callback with olimexUDP instance
 void onMessageReceived(unsigned char* buffer, int bufferSize) {
+  lastMessageReceivedTime = millis();
+
      // Ensure that bufferSize does not exceed MAX_SIZE to avoid overflow.
   int sizeToCopy = (bufferSize > BUFFER_SIZE) ? BUFFER_SIZE : bufferSize;
 
@@ -80,6 +85,7 @@ void setup() {
 
   //set bytes all to 0
   memset(bytes, 0, sizeof(bytes));
+
   // Initialize some example byte values
   // bytes[2] = 0b00000000;
   // bytes[3] = 0b00001000;
@@ -153,10 +159,22 @@ void loop() {
   // completely reactive to the udp onMessage handler, and its frequency
 
   olimexLAN->checkUDP(); //check for messages
-  matrixControl.update(bytes);
-  matrixControl.display();  
+   
+
+  if(millis() - lastMessageReceivedTime > messageTimeout) {
+    Serial.println("no message received in " + String(messageTimeout) + "ms");
+    Serial.println("setting all low");
+    matrixControl.setAllLow();
+    matrixControl.display();
+  } else {
+    matrixControl.update(bytes);
+    matrixControl.display(); 
+  }
 
   return;
+
+  //-----------------------------------------------
+  // OLD TESTING CODE BELOW - NOT USED
 
   float frequency = 1000.0; //set high
   
