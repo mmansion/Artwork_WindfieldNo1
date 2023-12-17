@@ -12,10 +12,15 @@ static int PIXELS_PER_FOOT = 4;
 static int PIXEL_SIZE = 2;
 static int TILE_OFFSET = 8; //center sculpture at origin
 
+/* GRID CONFIG
+  ------------------------------ */
+
 static int GRID_COLS = 16;
 static int GRID_ROWS = 5;
+static int GRID_BORDER_MARGIN = 100;
 
- // (16x5) rows: W->E, cols: N->S
+// (16x5) rows: W->E, cols: N->S
+// see: assets/tilemap.png
 static int[][] TILE_ARRANGEMENT = {
     // a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p
     {  0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0 }, // 1

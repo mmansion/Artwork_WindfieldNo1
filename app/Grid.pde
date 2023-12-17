@@ -4,8 +4,8 @@ class Grid {
   int[] timeOff; //when to turn off in millis
   boolean[] active;
   boolean[] tiled;
-  
   int decay = 500;
+  
   
   Grid(int r, int c) {
     //one dimensional arrays
@@ -18,6 +18,7 @@ class Grid {
     int offset = UNIT_SIZE/2;
     int row = 0;
     int col = 0;
+    
     for (int y = offset; y < UNIT_SIZE * r + offset; y += UNIT_SIZE) { //rows
       col = 0;
       for (int x = offset; x < UNIT_SIZE * c + offset; x += UNIT_SIZE) {//cols 
@@ -58,6 +59,7 @@ class Grid {
       noFill();
       strokeWeight(2);
       stroke(0, 255, 255, 100);
+      
       if(tiled[i]) {
         fill(255, 0, 0,50);
       }
@@ -67,6 +69,20 @@ class Grid {
       
       rect(points[i].x, points[i].y, UNIT_SIZE, UNIT_SIZE);
     }
+    frameBorder();
+  }
+  void frameBorder() {
+    pushStyle();
+    rectMode(CORNER);
+    stroke(0, 255, 255);
+    strokeWeight(2);
+    rect(
+    -GRID_BORDER_MARGIN/2, 
+    -GRID_BORDER_MARGIN/2, 
+    UNIT_SIZE * GRID_COLS + GRID_BORDER_MARGIN, 
+    UNIT_SIZE * GRID_ROWS + GRID_BORDER_MARGIN);
+    popStyle();
+    
   }
   void checkRange(PVector wp) {
     //for (int i = 0; i < points.length; i++) {

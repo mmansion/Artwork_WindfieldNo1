@@ -8,11 +8,13 @@ WindParticle[] windParticles;
 boolean showParticles = true;
 boolean showRange = true;
 
+Grid grid;
+
 PGraphics pg;
 int numParticles = 200;
 float boost = 10.0;
 int range = 5; // particle dist to point to activate
-Grid grid;
+
 int ledSize = 4;
 float noiseScale = 0.01/4; // increase divisor for change in pattern
 
@@ -34,6 +36,8 @@ void setup() {
   clear();
  
   pg = createGraphics(GRID_ROWS * UNIT_SIZE, GRID_COLS * UNIT_SIZE);
+  
+  // creates new tile grid according to config/TILE_ARRANGEMENT
   grid = new Grid(GRID_ROWS, GRID_COLS); 
   
   cam = new CanvasCam(this);

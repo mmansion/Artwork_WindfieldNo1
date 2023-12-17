@@ -7,19 +7,19 @@
 // gui library
 //import de.bezier.guido.*;
 
-//udp communication
-import hypermedia.net.*;
-
-//java utils
+//Java utils
 import java.util.List;
 import java.util.Date;
 import java.util.Arrays;
 
-// math functions
+// Math functions
 import java.math.*;
 
-// processing libraries
+// Processing libraries
 import processing.serial.*;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+
+//UDP 0.1 Stephane Cousot
+import hypermedia.net.*;
