@@ -1,17 +1,18 @@
-class Panel {
+class Tile {
 
-  public  PVector origin;
-  private PVector p1, p2, p3, p4, t1;
-  private int     platformId;
-  private Boolean[] activePtArr  = new Boolean[MTU * 8];
-  private char[]    activePtBuff = new char[MTU];
-  private byte[]    mtrCtrlBuff = new byte[MTU];
-  public PVector[][] points = new PVector[ROWS_PER_PANEL][COLS_PER_PANEL];
+  public  PVector    position;
+  private PVector    p1, p2, p3, p4, t1;
+  private int        platformId;
+  private Boolean[]  activePtArr  = new Boolean[MTU * 8];
+  private char[]     activePtBuff = new char[MTU];
+  private byte[]     mtrCtrlBuff = new byte[MTU];
+  public PVector[][] points = new PVector[ROWS_PER_TILE][COLS_PER_TILE];
   public String ip; // network address of platform
-  Panel(int id, PVector pos, float deg, color col) {
+  
+  Tile(int id, PVector pos, float deg, color col) {
 
     platformId = id;
-    origin = pos; // set the origin position of the platform
+    position = pos; // set the origin position of the platform
 
     setPointPositions();
 
@@ -27,9 +28,23 @@ class Panel {
     this.ip = platformIp;
   }
 
-  public void draw() {
+  public void display() {
+    pushStyle();
+    rectMode(CORNER);
 
-   
+    int step = UNIT_SIZE/4;
+    int subUnitSize = UNIT_SIZE/4;
+    for (int y = subUnitSize/2; y < subUnitSize * 4; y += subUnitSize) { //rows
+      for (int x = subUnitSize/2; x < subUnitSize * 4; x += subUnitSize) {//cols 
+        fill(255, 0, 0);
+         noStroke();
+        ellipse(x, y, subUnitSize*.1, subUnitSize*.1); 
+      }
+    }
+    noFill();
+    stroke(255);
+    rect(position.x, position.y, UNIT_SIZE, UNIT_SIZE);
+    popStyle();
   }
 
   public void setPointPositions() {

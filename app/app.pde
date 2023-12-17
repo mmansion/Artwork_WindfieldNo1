@@ -41,25 +41,44 @@ void setup() {
   grid = new Grid(GRID_ROWS, GRID_COLS); 
   
   cam = new CanvasCam(this);
+  
 }
+// 1 = grid dev
+// 2 = tile dev
+
+int MODE = 2;
 
 void draw() {
- 
-  if (showParticles) {
-    //fill(0, 10);
-    //rect(0, 0, width, height);
-    background(0);
-  } else {
-    background(0);
-  }
-
-  grid.display();
   
-  stroke(255);
-  for (int i = 0; i < numParticles; i++) {
-    windParticles[i].update();
-    windParticles[i].display();
+  if(MODE == 1) {
+    
+    background(0);
+    grid.display();
+    
+    stroke(255);
+    for (int i = 0; i < numParticles; i++) {
+      windParticles[i].update();
+      windParticles[i].display();
+    }
+    
   }
+  
+  if(MODE == 2) {
+    background(0);
+    //Panel(int id, PVector pos, float deg, color col) {
+    Tile tile = new Tile(0, new PVector(0,0), 0, 255);
+    tile.display();
+  }
+ 
+  //if (showParticles) {
+  //  fill(0, 10);
+  //  rect(0, 0, width, height);
+  //  //background(0);
+  //} else {
+  //  background(0);
+  //}
+  
+  
 }
 void mousePressed() {
   

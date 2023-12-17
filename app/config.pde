@@ -30,9 +30,9 @@ static int[][] TILE_ARRANGEMENT = {
     {  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 }, // 5
 };
 
-/* PANEL CONFIG
+/* TILE CONFIG
   ------------------------------ */
-int NUM_PANELS  = 39;
+int NUM_TILES  = 39;
 //int NUM_RINGS      = 10;
 //int RING_SPACING   = 10;
 //int INNER_DIAM     = 200;
@@ -42,8 +42,8 @@ int NUM_PANELS  = 39;
 //int PLATFORM_DEG_SPACING = 10;
 
 int POINTS_PER_PLATFORM; //calculated
-int COLS_PER_PANEL = 4;
-int ROWS_PER_PANEL = 4;
+int COLS_PER_TILE = 4;
+int ROWS_PER_TILE = 4;
 
 
 /* NETWORK & COMMS
