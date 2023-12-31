@@ -32,7 +32,7 @@ static int[][] TILE_ARRANGEMENT = {
 
 /* TILE CONFIG
   ------------------------------ */
-int NUM_TILES  = 39;
+int NUM_TILES  = 38;
 //int NUM_RINGS      = 10;
 //int RING_SPACING   = 10;
 //int INNER_DIAM     = 200;

@@ -25,7 +25,6 @@ void settings() {
 }
 void setup() {
   
-  rectMode(CENTER);
   background(0);
   windParticles = new WindParticle[numParticles];
   for (int i = 0; i < numParticles; i++) {
@@ -38,7 +37,7 @@ void setup() {
   pg = createGraphics(GRID_ROWS * UNIT_SIZE, GRID_COLS * UNIT_SIZE);
   
   // creates new tile grid according to config/TILE_ARRANGEMENT
-  grid = new Grid(GRID_ROWS, GRID_COLS); 
+  grid = new Grid(); 
   
   cam = new CanvasCam(this);
   
@@ -46,7 +45,9 @@ void setup() {
 // 1 = grid dev
 // 2 = tile dev
 
-int MODE = 2;
+int MODE = 1;
+
+Boolean showWindParticles = false;
 
 void draw() {
   
@@ -56,17 +57,20 @@ void draw() {
     grid.display();
     
     stroke(255);
-    for (int i = 0; i < numParticles; i++) {
-      windParticles[i].update();
-      windParticles[i].display();
+    if(showWindParticles) {
+      for (int i = 0; i < numParticles; i++) {
+        windParticles[i].update();
+        windParticles[i].display();
+      }
     }
+    
     
   }
   
   if(MODE == 2) {
     background(0);
     //Panel(int id, PVector pos, float deg, color col) {
-    Tile tile = new Tile(0, new PVector(0,0), 0, 255);
+    Tile tile = new Tile(0, new PVector(0,0), 255);
     tile.display();
   }
  

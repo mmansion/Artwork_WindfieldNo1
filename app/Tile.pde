@@ -6,10 +6,12 @@ class Tile {
   private Boolean[]  activePtArr  = new Boolean[MTU * 8];
   private char[]     activePtBuff = new char[MTU];
   private byte[]     mtrCtrlBuff = new byte[MTU];
-  public PVector[][] points = new PVector[ROWS_PER_TILE][COLS_PER_TILE];
+  // public PVector[][] points = new PVector[ROWS_PER_TILE][COLS_PER_TILE];
   public String ip; // network address of platform
-  
-  Tile(int id, PVector pos, float deg, color col) {
+
+  PVector[] points = new PVector[COLS_PER_TILE * ROWS_PER_TILE];
+
+  Tile(int id, PVector pos, color col) {
 
     platformId = id;
     position = pos; // set the origin position of the platform
@@ -19,7 +21,7 @@ class Tile {
     println("Platform #" + platformId + " , with " + points.length);
     //platformGui = new PlatformGui(platformId, p2, p4);
 
-    for(int i = 0; i < MTU * 8; i++) {
+    for (int i = 0; i < MTU * 8; i++) {
       activePtArr[i] = false;
     }
   }
@@ -29,30 +31,47 @@ class Tile {
   }
 
   public void display() {
+    pushMatrix();
+    translate(this.position.x, this.position.y);
+
     pushStyle();
     rectMode(CORNER);
 
-    int step = UNIT_SIZE/4;
-    int subUnitSize = UNIT_SIZE/4;
-    for (int y = subUnitSize/2; y < subUnitSize * 4; y += subUnitSize) { //rows
-      for (int x = subUnitSize/2; x < subUnitSize * 4; x += subUnitSize) {//cols 
-        fill(255, 0, 0);
-         noStroke();
-        ellipse(x, y, subUnitSize*.1, subUnitSize*.1); 
-      }
-    }
     noFill();
     stroke(255);
-    rect(position.x, position.y, UNIT_SIZE, UNIT_SIZE);
+    strokeWeight(1);
+    rect(0, 0, UNIT_SIZE, UNIT_SIZE);
+    for (int p = 0; p < points.length; p++) {
+      //print(points[p]);
+      ellipse(points[p].x, points[p].y, 10, 10);
+    }
+    //translate(-UNIT_SIZE/2, -UNIT_SIZE/2);
+
+    //int step = UNIT_SIZE/4;
+    //int subUnitSize = UNIT_SIZE/4;
+    //for (int y = subUnitSize/2; y < subUnitSize * 4; y += subUnitSize) { //rows
+    //  for (int x = subUnitSize/2; x < subUnitSize * 4; x += subUnitSize) {//cols
+    //    fill(255, 0, 0);
+    //    noStroke();
+    //    ellipse(x, y, subUnitSize*.1, subUnitSize*.1);
+    //  }
+    //}
+    popMatrix();
     popStyle();
   }
 
   public void setPointPositions() {
-
+    int subUnitSize = UNIT_SIZE/4;
+    int i = 0;
+    for (int y = subUnitSize/2; y < subUnitSize * 4; y += subUnitSize) { //rows
+      for (int x = subUnitSize/2; x < subUnitSize * 4; x += subUnitSize) {//cols
+        points[i] = new PVector(x, y);
+        i++;
+      }
+    }
   }
 
   public void drawPoints() {
-
   }
 
   //public void updateMotors()
@@ -62,12 +81,12 @@ class Tile {
     int p = 0; //iterate points
 
     // for each byte in the packet
-    for(int theByte = 0; theByte < MTU; theByte++) {
+    for (int theByte = 0; theByte < MTU; theByte++) {
 
       // for each bit in the byte
-      for(int bitPos = 0; bitPos < 8; bitPos++) {
+      for (int bitPos = 0; bitPos < 8; bitPos++) {
 
-        if(activePtArr[p]) {
+        if (activePtArr[p]) {
           activePtBuff[theByte] = this.setBit( activePtBuff[theByte], bitPos );
         } else {
           activePtBuff[theByte] = this.clearBit( activePtBuff[theByte], bitPos );
@@ -80,10 +99,8 @@ class Tile {
   }
 
   public void drawActivePoints() {
-
-   
   }
- 
+
 
   // ref: https://www.cs.umd.edu/class/sum2003/cmsc311/Notes/BitOp/bitI.html
 
@@ -100,7 +117,6 @@ class Tile {
   private Boolean isBitSet(char b, int bit) {
     return (b & (1 << bit)) != 0;
   }
-
 }
 
 class PlatformGui {
@@ -135,5 +151,4 @@ class PlatformGui {
 
   //  shape(platformShape, 0, 0);
   //}
-
 }
