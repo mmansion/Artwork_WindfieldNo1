@@ -29,7 +29,7 @@ class Grid {
         if (TILE_ARRANGEMENT[row][col] == 1) {
           tiled[i] = true;
           tiles[i] = new Tile(i, new PVector(x, y), 255);
-          allPoints.addAll(tiles[i].getPoints()); //TODO: pickup here
+          allPoints.addAll(tiles[i].getPoints()); //TODO: pickup here  
          
         } else {
           tiled[i] = false;
