@@ -9,16 +9,16 @@ class Tile {
   // public PVector[][] points = new PVector[ROWS_PER_TILE][COLS_PER_TILE];
   public String ip; // network address of platform
 
-  PVector[] points = new PVector[COLS_PER_TILE * ROWS_PER_TILE];
+  ArrayList<PVector> points = new ArrayList();
 
   Tile(int id, PVector pos, color col) {
 
     platformId = id;
     position = pos; // set the origin position of the platform
 
-    setPointPositions();
+    setPoints();
 
-    println("Platform #" + platformId + " , with " + points.length);
+    println("Platform #" + platformId + " , with " + points.size());
     //platformGui = new PlatformGui(platformId, p2, p4);
 
     for (int i = 0; i < MTU * 8; i++) {
@@ -41,9 +41,9 @@ class Tile {
     stroke(255);
     strokeWeight(1);
     rect(0, 0, UNIT_SIZE, UNIT_SIZE);
-    for (int p = 0; p < points.length; p++) {
-      //print(points[p]);
-      ellipse(points[p].x, points[p].y, 10, 10);
+    for(int i = 0; i < points.size(); i++) {
+      PVector p = points.get(i);
+      ellipse(p.x, p.y, 10, 10);
     }
     //translate(-UNIT_SIZE/2, -UNIT_SIZE/2);
 
@@ -60,15 +60,18 @@ class Tile {
     popStyle();
   }
 
-  public void setPointPositions() {
+  public void setPoints() {
     int subUnitSize = UNIT_SIZE/4;
     int i = 0;
     for (int y = subUnitSize/2; y < subUnitSize * 4; y += subUnitSize) { //rows
       for (int x = subUnitSize/2; x < subUnitSize * 4; x += subUnitSize) {//cols
-        points[i] = new PVector(x, y);
+        points.add(new PVector(x, y));
         i++;
       }
     }
+  }
+  public ArrayList<PVector> getPoints() {
+    return points;
   }
 
   public void drawPoints() {

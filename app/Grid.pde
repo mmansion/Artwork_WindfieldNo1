@@ -6,6 +6,7 @@ class Grid {
   boolean[] active;
   boolean[] tiled;
   int decay = 500;
+  ArrayList<PVector> allPoints;
 
   Grid() {
     //one dimensional arrays
@@ -15,6 +16,7 @@ class Grid {
     timeOff = new int[n];
     tiled   = new boolean[n];
     center_points = new PVector[n];
+    allPoints = new ArrayList();
 
     int i = 0;
     int offset = UNIT_SIZE/2;
@@ -27,6 +29,7 @@ class Grid {
         if (TILE_ARRANGEMENT[row][col] == 1) {
           tiled[i] = true;
           tiles[i] = new Tile(i, new PVector(x, y), 255);
+          allPoints.addAll(tiles[i].getPoints()); //TODO: pickup here
          
         } else {
           tiled[i] = false;
@@ -34,7 +37,7 @@ class Grid {
         }
         active[i] = false;
         
-         center_points[i] = new PVector(x, y);
+        center_points[i] = new PVector(x, y);
         i++;
         //println("col: " + col);
         col++;
