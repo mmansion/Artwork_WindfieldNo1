@@ -48,13 +48,25 @@ void setup() {
 int MODE = 1;
 
 Boolean showWindParticles = false;
-
+int inc = 0;
 void draw() {
+ 
+  
   
   if(MODE == 1) {
-    
     background(0);
     grid.display();
+    
+    //pushStyle();
+    //fill(255, 0, 0);
+    //PVector p = grid.allPoints.get(inc);
+    //ellipse(p.x, p.y, 10, 10);
+    //popStyle();
+    
+    for(int i = 0; i < grid.allPoints.size(); i++) {
+      fill(255);
+      ellipse(grid.allPoints.get(i).x, grid.allPoints.get(i).y, 10, 10);
+    }
     
     stroke(255);
     if(showWindParticles) {

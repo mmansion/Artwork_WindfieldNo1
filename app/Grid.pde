@@ -29,8 +29,18 @@ class Grid {
         if (TILE_ARRANGEMENT[row][col] == 1) {
           tiled[i] = true;
           tiles[i] = new Tile(i, new PVector(x, y), 255);
-          allPoints.addAll(tiles[i].getPoints()); //TODO: pickup here  
-         
+          
+          ArrayList<PVector> localPoints = tiles[i].getPoints();
+          ArrayList<PVector> offsetPoints = new ArrayList();
+          for(int p = 0; p <  localPoints.size(); p++) {
+            PVector offsetPoint = localPoints.get(p).copy();
+            offsetPoint.x += x;
+            offsetPoint.y += y;
+            offsetPoints.add(offsetPoint);
+          }
+          
+          allPoints.addAll(offsetPoints); //TODO: pickup here  
+                  
         } else {
           tiled[i] = false;
           tiles[i] = null;
@@ -87,6 +97,8 @@ class Grid {
     }
     frameBorder();
   }
+ 
+  
   void frameBorder() {
     pushStyle();
     rectMode(CORNER);

@@ -71,7 +71,8 @@ class Tile {
     }
   }
   public ArrayList<PVector> getPoints() {
-    return points;
+    ArrayList<PVector> copy = new ArrayList<PVector>(points);
+    return copy;
   }
 
   public void drawPoints() {
