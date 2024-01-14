@@ -6,8 +6,8 @@ class Grid {
   boolean[] active;
   boolean[] tiled;
   int decay = 500;
-  ArrayList<PVector> allPoints;
-
+  ArrayList<PointWithAngle> allPoints;
+  
   Grid() {
     //one dimensional arrays
     int n = GRID_COLS * GRID_ROWS;
@@ -16,12 +16,14 @@ class Grid {
     timeOff = new int[n];
     tiled   = new boolean[n];
     center_points = new PVector[n];
-    allPoints = new ArrayList();
+    // allPoints = new ArrayList();
+    allPoints = new ArrayList<PointWithAngle>();
 
     int i = 0;
     int offset = UNIT_SIZE/2;
     int row = 0;
     int col = 0;
+
 
     for (int y = 0; y < UNIT_SIZE * GRID_ROWS; y += UNIT_SIZE) { //rows
       col = 0;
@@ -36,10 +38,17 @@ class Grid {
             PVector offsetPoint = localPoints.get(p).copy();
             offsetPoint.x += x;
             offsetPoint.y += y;
-            offsetPoints.add(offsetPoint);
-          }
+            // offsetPoints.add(offsetPoint);
+
+            float angle = 0.0; //temp
+            //float angle = calculateAngle(offsetPoint); // Replace `calculateAngle` with your own angle calculation logic
+            PointWithAngle pointWithAngle = new PointWithAngle(offsetPoint, angle);
+            allPoints.add(pointWithAngle); // Add the point to the list
           
-          allPoints.addAll(offsetPoints); //TODO: pickup here  
+          }
+
+          
+          // allPoints.addAll(offsetPoints); //TODO: pickup here  
                   
         } else {
           tiled[i] = false;
@@ -55,6 +64,7 @@ class Grid {
       //println("row: " + row);
       row++;
     }
+   
   }
   void allOff() {
     //for(int i = 0; i < center_points.length; i++) {
@@ -117,5 +127,17 @@ class Grid {
     //    turnOn(i);
     //  }
     //}
+  }
+  // Inner class to hold both PVector and angle
+  class PointWithAngle {
+    PVector point;
+    float x, y, angle;
+
+    PointWithAngle(PVector point, float angle) {
+      this.point = point;
+      this.angle = angle;
+      this.x = point.x;
+      this.y = point.y;
+    }
   }
 }
