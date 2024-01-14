@@ -3,8 +3,7 @@
 UdpSender udpSender;
 
 
-
-WindParticle[] windParticles;
+Particle[] windParticles;
 boolean showParticles = true;
 boolean showRange = true;
 
@@ -26,10 +25,10 @@ void settings() {
 void setup() {
   
   background(0);
-  windParticles = new WindParticle[numParticles];
+  windParticles = new Particle[numParticles];
   for (int i = 0; i < numParticles; i++) {
-    PVector p = randParticlePos();
-    windParticles[i] = new WindParticle(p.x, p.y);
+    PVector pos = randParticlePos();
+    windParticles[i] = new Particle(pos);
   }
   ellipseMode(CENTER);
   clear();
@@ -47,9 +46,9 @@ void setup() {
 
 int MODE = 1;
 
-Boolean showWindParticles = false;
+Boolean showWindParticles = true;
 int inc = 0;
-void draw() {
+void draw() { 
  
   
   
