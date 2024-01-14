@@ -43,10 +43,9 @@ void setup() {
 }
 // 1 = grid dev
 // 2 = tile dev
-
 int MODE = 1;
 
-Boolean showWindParticles = true;
+Boolean showWindParticles = false;
 int inc = 0;
 void draw() { 
  
@@ -62,10 +61,10 @@ void draw() {
     //ellipse(p.x, p.y, 10, 10);
     //popStyle();
     
-    for(int i = 0; i < grid.allPoints.size(); i++) {
-      fill(255);
-      ellipse(grid.allPoints.get(i).x, grid.allPoints.get(i).y, 10, 10);
-    }
+    // for(int i = 0; i < grid.allPoints.size(); i++) {
+    //   fill(255);
+    //   ellipse(grid.allPoints.get(i).x, grid.allPoints.get(i).y, 10, 10);
+    // }
     
     stroke(255);
     if(showWindParticles) {
@@ -103,35 +102,7 @@ void mouseReleased() {
   noiseSeed(millis());
 }
 
-class WindParticle {
-  PVector pos;
-  WindParticle(float x, float y) {
-    pos = new PVector(x, y);
-  }
-  void update() {
-    float n = noise(pos.x * noiseScale, pos.y * noiseScale, frameCount * noiseScale * noiseScale);
-    float a = TWO_PI * n;
-    pos.x += cos(a) * boost;
-    pos.y += sin(a) * boost;
-    if (!onScreen(pos)) {
-      pos = randParticlePos();
-    }
 
-    grid.checkRange(pos);
-    
-  }
-  void display() {
-    if (showParticles) {
-      point(pos.x, pos.y);
-    }
-    if(showRange) {
-      //noFill();
-      fill(255);
-      ellipse(pos.x, pos.y, range, range);
-    }
-    
-  }
-}
 
 PVector randParticlePos() {
   return new PVector(random(GRID_COLS * UNIT_SIZE), random(GRID_ROWS * UNIT_SIZE));

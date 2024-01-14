@@ -37,13 +37,27 @@ class Tile {
     pushStyle();
     rectMode(CORNER);
 
-    noFill();
-    stroke(255);
-    strokeWeight(1);
+    //draw red text in the top right corner of the tile the mcu number
+    fill(255, 0, 0);
+    textAlign(CENTER, CENTER); // Set text alignment to center
+    textSize(16);
+    text(platformId, 24, 20);
+
+    noFill(); 
     rect(0, 0, UNIT_SIZE, UNIT_SIZE);
     for(int i = 0; i < points.size(); i++) {
       PVector p = points.get(i);
-      ellipse(p.x, p.y, 10, 10);
+      noFill();
+      stroke(60, 200);
+      strokeWeight(.75);
+      ellipse(p.x, p.y, 16, 16);
+      //draw the text of the index number at this position
+      
+      fill(220, 200, 100, 200);
+      textAlign(CENTER, CENTER); // Set text alignment to center
+      textSize(10);
+      text(i, p.x, p.y-2);
+
     }
     //translate(-UNIT_SIZE/2, -UNIT_SIZE/2);
 
@@ -73,9 +87,6 @@ class Tile {
   public ArrayList<PVector> getPoints() {
     ArrayList<PVector> copy = new ArrayList<PVector>(points);
     return copy;
-  }
-
-  public void drawPoints() {
   }
 
   //public void updateMotors()

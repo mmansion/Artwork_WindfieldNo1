@@ -20,6 +20,7 @@ class Grid {
     allPoints = new ArrayList<PointWithAngle>();
 
     int i = 0;
+    int mcu_count = 0;
     int offset = UNIT_SIZE/2;
     int row = 0;
     int col = 0;
@@ -30,7 +31,7 @@ class Grid {
       for (int x = 0; x < UNIT_SIZE * GRID_COLS; x += UNIT_SIZE) {//cols
         if (TILE_ARRANGEMENT[row][col] == 1) {
           tiled[i] = true;
-          tiles[i] = new Tile(i, new PVector(x, y), 255);
+          tiles[i] = new Tile(mcu_count++, new PVector(x, y), 255);
           
           ArrayList<PVector> localPoints = tiles[i].getPoints();
           ArrayList<PVector> offsetPoints = new ArrayList();
@@ -83,6 +84,7 @@ class Grid {
     noStroke();
   
     int n = GRID_COLS * GRID_ROWS;
+
     for (int i = 0; i < n; i++) {
       //if (active[i]) {
       //  fill(255);
@@ -105,9 +107,16 @@ class Grid {
 
       noFill();
     }
+    
     frameBorder();
   }
- 
+  void displayPoints() {
+    for (int i = 0; i < allPoints.size(); i++) {
+      PointWithAngle pointWithAngle = allPoints.get(i);
+      pointWithAngle.drawPoint();
+      pointWithAngle.drawArrow();
+    }
+  }
   
   void frameBorder() {
     pushStyle();
@@ -132,12 +141,20 @@ class Grid {
   class PointWithAngle {
     PVector point;
     float x, y, angle;
-
+    Arrow arrow = null;
     PointWithAngle(PVector point, float angle) {
       this.point = point;
       this.angle = angle;
       this.x = point.x;
       this.y = point.y;
+      this.arrow = new Arrow(point, angle, 5);
+    }
+    void drawPoint() {
+      fill (255, 0, 0);
+      ellipse(x, y, 10, 10);
+    }
+    void drawArrow() {
+      arrow.display();
     }
   }
 }
