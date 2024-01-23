@@ -2,3 +2,4 @@
 node_modules
 bfg-1.14.0.jar
 .env
+**/out/*

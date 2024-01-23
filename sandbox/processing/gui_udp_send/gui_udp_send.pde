@@ -1,5 +1,5 @@
 //---------------------------------------------
-static int MCU_ID = 1;  //0-38
+static int MCU_ID = 1;  //0-38 (e.g. MCU_ID 0 is mcu-001)
 
 // UDP
 import hypermedia.net.*;
