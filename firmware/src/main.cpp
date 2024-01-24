@@ -162,8 +162,8 @@ void loop() {
    
 
   if(millis() - lastMessageReceivedTime > messageTimeout) {
-    Serial.println("no message received in " + String(messageTimeout) + "ms");
-    Serial.println("setting all low");
+    // Serial.println("no message received in " + String(messageTimeout) + "ms");
+    // Serial.println("setting all low");
     matrixControl.setAllLow();
     matrixControl.display();
   } else {
