@@ -54,7 +54,7 @@ void setup() {
 byte[] status = new byte[2]; // byte array to hold the status of each circle
 
 void updateStatus() {
-  int startIndex = MCU_ID * 2;
+  int startIndex = MCU_ID * 2; //16 bits
   println("Start index = " + startIndex);
   // Check if startIndex and startIndex+1 are within the bounds of the array
   if (startIndex < 0 || startIndex + 1 >= byteArray.length) {
