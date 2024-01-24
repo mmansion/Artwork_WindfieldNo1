@@ -4,24 +4,30 @@ class Grid {
   PVector[] center_points;
   int[] timeOff; //when to turn off in millis
   boolean[] active;
-  boolean[] tiled;
+  boolean[] isTiled;
   int decay = 500;
-  ArrayList<PointWithAngle> allPoints;
+  ArrayList<Point> allPoints;
   
   Grid() {
-    //one dimensional arrays
+
+    //ONE dimensional arrays
     int n = GRID_COLS * GRID_ROWS;
-    tiles = new Tile[n];
+
+    // tiles are used for visual reference only
+    // they are not used for wind vector calculations or activation of nodes
+    tiles   = new Tile[n];
     active  = new boolean[n];
     timeOff = new int[n];
-    tiled   = new boolean[n];
+    isTiled   = new boolean[n];
     center_points = new PVector[n];
-    // allPoints = new ArrayList();
-    allPoints = new ArrayList<PointWithAngle>();
+
+    // allPoints = new ArrayList<PointWithAngle>();
+    allPoints = new ArrayList<Point>();
 
     int i = 0;
     int mcu_count = 0;
     int offset = UNIT_SIZE/2;
+    int pointsPerTile = ROWS_PER_TILE * COLS_PER_TILE;
     int row = 0;
     int col = 0;
 
@@ -29,31 +35,46 @@ class Grid {
     for (int y = 0; y < UNIT_SIZE * GRID_ROWS; y += UNIT_SIZE) { //rows
       col = 0;
       for (int x = 0; x < UNIT_SIZE * GRID_COLS; x += UNIT_SIZE) {//cols
+
+        //if there is a tile at this position on the grid
         if (TILE_ARRANGEMENT[row][col] == 1) {
-          tiled[i] = true;
+
+          // maintain a record of the index
+          isTiled[i] = true;
           tiles[i] = new Tile(mcu_count++, new PVector(x, y), 255);
           
           ArrayList<PVector> localPoints = tiles[i].getPoints();
-          ArrayList<PVector> offsetPoints = new ArrayList();
-          for(int p = 0; p <  localPoints.size(); p++) {
-            PVector offsetPoint = localPoints.get(p).copy();
-            offsetPoint.x += x;
-            offsetPoint.y += y;
-            // offsetPoints.add(offsetPoint);
+         // ArrayList<PVector> offsetPoints = new ArrayList();
+          for(int pointIndex = 0; pointIndex < pointsPerTile; pointIndex++) {
+            PVector offsetPosition = localPoints.get(pointIndex).copy();
+            offsetPosition.x += x;
+            offsetPosition.y += y;
+            // offsetPositions.add(offsetPosition);
 
-            float angle = 0.0; //temp
-            //float angle = calculateAngle(offsetPoint); // Replace `calculateAngle` with your own angle calculation logic
-            PointWithAngle pointWithAngle = new PointWithAngle(offsetPoint, angle);
-            allPoints.add(pointWithAngle); // Add the point to the list
-          
+            float angle = 0.0; //TMP
+            //float angle = calculateAngle(offsetPosition); // Replace `calculateAngle` with your own angle calculation logic
+            Point point = new Point(offsetPosition, angle, tiles[i].id, pointIndex);
+           
+            allPoints.add(point); // Add the point to the list
           }
-
-          
-          // allPoints.addAll(offsetPoints); //TODO: pickup here  
                   
         } else {
-          tiled[i] = false;
-          tiles[i] = null;
+          isTiled[i] = false;
+          tiles[i] = new Tile(-1, new PVector(x, y), 255);
+          
+          ArrayList<PVector> localPoints = tiles[i].getPoints();
+          // ArrayList<PVector> offsetPoints = new ArrayList();
+          for(int pointIndex = 0; pointIndex < pointsPerTile; pointIndex++) {
+            PVector offsetPosition = localPoints.get(pointIndex).copy();
+            offsetPosition.x += x;
+            offsetPosition.y += y;
+
+            float angle = 0.0; //TMP
+            //float angle = calculateAngle(offsetPosition); // Replace `calculateAngle` with your own angle calculation logic
+            Point point = new Point(offsetPosition, angle, tiles[i].id, pointIndex);
+          
+            allPoints.add(point); // Add the point to the list
+          }
         }
         active[i] = false;
         
@@ -98,7 +119,7 @@ class Grid {
       rect(center_points[i].x, center_points[i].y, UNIT_SIZE, UNIT_SIZE);
       
 
-      if (tiled[i]) {
+      if (isTiled[i]) {
         //fill(255, 0, 255);
         //ellipse(center_points[i].x, center_points[i].y, 5, 5);
         tiles[i].display();
@@ -112,9 +133,9 @@ class Grid {
   }
   void displayPoints() {
     for (int i = 0; i < allPoints.size(); i++) {
-      PointWithAngle pointWithAngle = allPoints.get(i);
-      pointWithAngle.drawPoint();
-      pointWithAngle.drawArrow();
+      Point point = allPoints.get(i);
+      point.drawArrow();
+      point.drawPoint();
     }
   }
   
@@ -137,24 +158,25 @@ class Grid {
     //  }
     //}
   }
+
   // Inner class to hold both PVector and angle
-  class PointWithAngle {
-    PVector point;
-    float x, y, angle;
-    Arrow arrow = null;
-    PointWithAngle(PVector point, float angle) {
-      this.point = point;
-      this.angle = angle;
-      this.x = point.x;
-      this.y = point.y;
-      this.arrow = new Arrow(point, angle, 5);
-    }
-    void drawPoint() {
-      fill (255, 0, 0);
-      ellipse(x, y, 10, 10);
-    }
-    void drawArrow() {
-      arrow.display();
-    }
-  }
+  // class PointWithAngle {
+  //   PVector point;
+  //   float x, y, angle;
+  //   Arrow arrow = null;
+  //   PointWithAngle(PVector point, float angle) {
+  //     this.point = point;
+  //     this.angle = angle;
+  //     this.x = point.x;
+  //     this.y = point.y;
+  //     this.arrow = new Arrow(point, angle, 5);
+  //   }
+  //   void drawPoint() {
+  //     fill (255, 0, 0);
+  //     ellipse(x, y, 10, 10);
+  //   }
+  //   void drawArrow() {
+  //     arrow.display();
+  //   }
+  // }
 }

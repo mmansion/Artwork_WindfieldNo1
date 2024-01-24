@@ -54,6 +54,7 @@ void draw() {
   if(MODE == 1) {
     background(0);
     grid.display();
+    grid.displayPoints();
     
     //pushStyle();
     //fill(255, 0, 0);
