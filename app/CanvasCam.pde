@@ -6,7 +6,7 @@ public class CanvasCam {
   float w, h;
   float X, Y;
   float mX, mY, pmX, pmY;
-  float panx=0, pany=0, px=0, py=0, dpx=0, dpy=0;
+  float panx=50, pany=50, px=0, py=0, dpx=0, dpy=0;
   float easing=.065;
   
   boolean[] keys = new boolean[2];

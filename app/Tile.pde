@@ -42,6 +42,7 @@ class Tile {
     text(id, 24, 20);
 
     noFill(); 
+    stroke(220, 200, 100, 200);
     rect(0, 0, UNIT_SIZE, UNIT_SIZE);
     for(int i = 0; i < points.size(); i++) {
       PVector p = points.get(i);

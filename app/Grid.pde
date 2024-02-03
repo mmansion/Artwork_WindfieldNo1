@@ -8,6 +8,11 @@ class Grid {
   int decay = 500;
   ArrayList<Point> allPoints;
   
+  // Assuming you have a baseDirection variable and a method to update it
+  float baseDirection = 0; // Initial direction in degrees
+  float directionChangeRate = 0.001; // How quickly the direction changes
+
+  
   Grid() {
 
     //ONE dimensional arrays
@@ -51,8 +56,9 @@ class Grid {
             offsetPosition.y += y;
             // offsetPositions.add(offsetPosition);
 
-            float angle = 0.0; //TMP
+            //float angle = 0.0; //TMP
             //float angle = calculateAngle(offsetPosition); // Replace `calculateAngle` with your own angle calculation logic
+            float angle = map(noise(offsetPosition.x * noiseScale, offsetPosition.y * noiseScale), 0, 1, 0, TWO_PI); // map from [0,1] to [0,TWO_PI] for a full rotation
             Point point = new Point(offsetPosition, angle, tiles[i].id, pointIndex);
            
             allPoints.add(point); // Add the point to the list
@@ -69,8 +75,10 @@ class Grid {
             offsetPosition.x += x;
             offsetPosition.y += y;
 
-            float angle = 0.0; //TMP
+            //float angle = 0.0; //TMP
             //float angle = calculateAngle(offsetPosition); // Replace `calculateAngle` with your own angle calculation logic
+            float angle = map(noise(offsetPosition.x * noiseScale, offsetPosition.y * noiseScale), 0, 1, 0, TWO_PI); // map from [0,1] to [0,TWO_PI] for a full rotation
+
             Point point = new Point(offsetPosition, angle, tiles[i].id, pointIndex);
           
             allPoints.add(point); // Add the point to the list
@@ -99,7 +107,34 @@ class Grid {
     //active[i]  = true;
     //timeOff[i] = millis() + decay;
   }
+  void update() {
+    for (int i = 0; i < allPoints.size(); i++) {
+      Point point = allPoints.get(i);
+      float timeOffset = noise(point.position.x * noiseScale, point.position.y * noiseScale, frameCount * noiseScale) * TWO_PI; // TWO_PI for a full rotation
+      // Adjust baseDirection over time
+      baseDirection += directionChangeRate;
+      // Ensure baseDirection stays within 0-360 degrees
+      baseDirection = baseDirection % 360;
+      // Convert baseDirection to radians for the math functions
+      float baseDirectionRadians = radians(baseDirection);
+      // Apply timeOffset and baseDirection to calculate the new angle
+      point.angle = baseDirectionRadians + timeOffset; // This line adjusts the angle based on base direction and time
+      
+      //important to call update on the points to ensure the arrows reflect a change
+      point.update();
+      
+    }
+    
+    //baseDirection+=1;
+    //if (baseDirection > 360) {
+    //  baseDirection = 0;
+    //}
+    //println("base direct = " + baseDirection);
+    println(allPoints.get(0).angle);
+  }
+  
   void display() {
+    pushStyle();
 
     allOff();
     noStroke();
@@ -107,14 +142,6 @@ class Grid {
     int n = GRID_COLS * GRID_ROWS;
 
     for (int i = 0; i < n; i++) {
-      //if (active[i]) {
-      //  fill(255);
-      //} else {
-      //  fill(50);
-      //}
-      //ellipse(center_points[i].x, center_points[i].y, LED_SIZE, LED_SIZE);
-      
-      
       // maybe the grid can be optimized by drawing into a pgraphics once
       if (isTiled[i]) {
         //fill(255, 0, 255);
@@ -126,19 +153,18 @@ class Grid {
         stroke(0, 255, 255, 50);
         rect(center_points[i].x, center_points[i].y, UNIT_SIZE, UNIT_SIZE);
       }
-      
-
-
+     
       noFill();
     }
     
     frameBorder();
+    popStyle();
   }
-  void displayPoints() {
+  void displayVectors() {
     for (int i = 0; i < allPoints.size(); i++) {
       Point point = allPoints.get(i);
       point.drawArrow();
-      point.drawPoint();
+      //point.drawPoint();
     }
   }
   
@@ -160,6 +186,18 @@ class Grid {
     //    turnOn(i);
     //  }
     //}
+  }
+  float getAngleAtClosestPoint(PVector pos) {
+    float minDist = Float.MAX_VALUE;
+    float angle = 0;
+    for (Point point : allPoints) {
+        float dist = PVector.dist(pos, point.position);
+        if (dist < minDist) {
+            minDist = dist;
+            angle = point.angle;
+        }
+    }
+    return angle;
   }
 
   // Inner class to hold both PVector and angle

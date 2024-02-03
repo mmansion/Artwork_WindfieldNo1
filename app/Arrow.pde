@@ -1,5 +1,5 @@
 class Arrow {
-    float angle;
+    public float angle;
     float scale;
     float x;
     float y;
@@ -10,7 +10,6 @@ class Arrow {
         this.x = position.x;
         this.y = position.y;
     }
-    
     void display() {
         pushMatrix();
         pushStyle();
@@ -20,12 +19,12 @@ class Arrow {
         
         float arrowSize = 10 * scale;
         float arrowHeadSize = 3 * scale;
-        
-        stroke(255);
-        strokeWeight(1);
+        noFill();
+        stroke(0,255,255,110);
+        strokeWeight(.5);
        
         // Draw arrow body
-        //line(-arrowSize/2, 0, arrowSize/2, 0); // Centered arrow body
+        line(-arrowSize/2.5, 0, arrowSize/2.5, 0); // Centered arrow body
         
         // Draw arrowhead
         beginShape();

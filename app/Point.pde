@@ -14,7 +14,12 @@ class Point {
       this.angle = angle;
       this.arrow = new Arrow(position, angle, 3);
     }
+    void update() {
+      this.arrow.angle = this.angle;
+    }
     void drawPoint() {
+      pushStyle();
+      noFill();
       if(tileId == -1) {
         noStroke();
         fill(0, 0, 100);
@@ -23,6 +28,7 @@ class Point {
         noFill();
         noStroke();
       }
+      popStyle();
     }
     void drawArrow() {
       arrow.display();

@@ -19,7 +19,7 @@ float noiseScale = 0.01/4; // increase divisor for change in pattern
 
 CanvasCam cam;
 void settings() {
-    size(UNIT_SIZE*GRID_COLS, UNIT_SIZE*GRID_ROWS);
+    size(UNIT_SIZE*GRID_COLS + GRID_BORDER_MARGIN, UNIT_SIZE*GRID_ROWS + GRID_BORDER_MARGIN);
 }
 
 void setup() {
@@ -44,19 +44,26 @@ void setup() {
 // 2 = tile dev
 int MODE = 1;
 int inc = 0;
+int wait_posFrame = 2000;
+int wait_buildGrid = 4000;
 void draw() { 
   
-  if(MODE == 1) {
-    background(0);
-    //grid.display();
-    grid.displayPoints();
-    stroke(255);
-    if(SHOW_PARTICLES) {
-      for (int i = 0; i < numParticles; i++) {
-        windParticles[i].update();
-        windParticles[i].display();
-      }
-    } 
+  if(millis() > wait_posFrame) {
+    
+    if(MODE == 1) {
+      background(0);
+      grid.update();
+      grid.displayVectors();
+      grid.display();
+      
+      stroke(255);
+      if(SHOW_PARTICLES && millis() > wait_buildGrid) {
+        for (int i = 0; i < numParticles; i++) {
+          windParticles[i].update2();
+          windParticles[i].display();
+        }
+      } 
+    }
   }
 }
 void mousePressed() {

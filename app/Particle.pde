@@ -16,6 +16,18 @@ class Particle {
 
         //grid.checkRange(pos);
     }
+    void update2() {
+      // Get angle from the closest point in the grid
+      float angle = grid.getAngleAtClosestPoint(pos);
+  
+      // Update position based on the angle
+      pos.x += cos(angle) * boost;
+      pos.y += sin(angle) * boost;
+  
+      if (!onScreen(pos)) {
+          pos = randParticlePos();
+      }
+    }
     void display() {
       point(pos.x, pos.y);
  
