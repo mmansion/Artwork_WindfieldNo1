@@ -113,17 +113,20 @@ class Grid {
       //  fill(50);
       //}
       //ellipse(center_points[i].x, center_points[i].y, LED_SIZE, LED_SIZE);
-      noFill();
-      strokeWeight(2);
-      stroke(0, 255, 255, 50);
-      rect(center_points[i].x, center_points[i].y, UNIT_SIZE, UNIT_SIZE);
       
-
+      
+      // maybe the grid can be optimized by drawing into a pgraphics once
       if (isTiled[i]) {
         //fill(255, 0, 255);
         //ellipse(center_points[i].x, center_points[i].y, 5, 5);
         tiles[i].display();
+      } else {
+        noFill();
+        strokeWeight(2);
+        stroke(0, 255, 255, 50);
+        rect(center_points[i].x, center_points[i].y, UNIT_SIZE, UNIT_SIZE);
       }
+      
 
 
       noFill();
