@@ -5,14 +5,12 @@ UdpSender udpSender;
 
 Particle[] windParticles;
 boolean SHOW_PARTICLES = true;
-boolean SHOW_RANGE = true;
 
 Grid grid;
 
 PGraphics pg;
 int numParticles = 200;
 float boost = 10.0;
-int range = 5; // particle dist to point to activate
 
 int ledSize = 4;
 float noiseScale = 0.01/4; // increase divisor for change in pattern
@@ -53,8 +51,13 @@ void draw() {
     if(MODE == 1) {
       background(0);
       grid.update();
-      grid.displayVectors();
+      grid.checkParticlesInRange(windParticles, 20);
+      
       grid.display();
+      grid.displayVectors();
+      
+      
+      
       
       stroke(255);
       if(SHOW_PARTICLES && millis() > wait_buildGrid) {

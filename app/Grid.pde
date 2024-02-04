@@ -120,6 +120,8 @@ class Grid {
       // Apply timeOffset and baseDirection to calculate the new angle
       point.angle = baseDirectionRadians + timeOffset; // This line adjusts the angle based on base direction and time
       
+     // point.active = false;
+      
       //important to call update on the points to ensure the arrows reflect a change
       point.update();
       
@@ -130,9 +132,9 @@ class Grid {
     //  baseDirection = 0;
     //}
     //println("base direct = " + baseDirection);
-    println(allPoints.get(0).angle);
+    //println(allPoints.get(0).angle);
   }
-  
+
   void display() {
     pushStyle();
 
@@ -140,7 +142,7 @@ class Grid {
     noStroke();
   
     int n = GRID_COLS * GRID_ROWS;
-
+  
     for (int i = 0; i < n; i++) {
       // maybe the grid can be optimized by drawing into a pgraphics once
       if (isTiled[i]) {
@@ -164,7 +166,7 @@ class Grid {
     for (int i = 0; i < allPoints.size(); i++) {
       Point point = allPoints.get(i);
       point.drawArrow();
-      //point.drawPoint();
+      point.drawPoint();
     }
   }
   
@@ -180,13 +182,25 @@ class Grid {
       UNIT_SIZE * GRID_ROWS + GRID_BORDER_MARGIN);
     popStyle();
   }
-  void checkRange(PVector wp) {
-    //for (int i = 0; i < center_points.length; i++) {
-    //  if (center_points[i].dist(wp) < range) {
-    //    turnOn(i);
-    //  }
-    //}
+  void checkParticlesInRange(Particle[] particles, float range) {
+     for (Point point : allPoints) {
+      point.active = false; // Reset point's active state for this check
+      
+      // Now loop through all particles for each point
+      for (Particle particle : particles) {
+        // Calculate the distance between the current point and particle
+        float dist = PVector.dist(point.position, particle.pos);
+      
+        // Check if the distance is within the specified range
+        if (dist <= range) {
+          // If so, set the point's active flag to true
+          point.active = true;
+          break; // Stop checking other particles for this point if one is found within range
+        }
+      }
+    }
   }
+
   float getAngleAtClosestPoint(PVector pos) {
     float minDist = Float.MAX_VALUE;
     float angle = 0;
@@ -199,25 +213,4 @@ class Grid {
     }
     return angle;
   }
-
-  // Inner class to hold both PVector and angle
-  // class PointWithAngle {
-  //   PVector point;
-  //   float x, y, angle;
-  //   Arrow arrow = null;
-  //   PointWithAngle(PVector point, float angle) {
-  //     this.point = point;
-  //     this.angle = angle;
-  //     this.x = point.x;
-  //     this.y = point.y;
-  //     this.arrow = new Arrow(point, angle, 5);
-  //   }
-  //   void drawPoint() {
-  //     fill (255, 0, 0);
-  //     ellipse(x, y, 10, 10);
-  //   }
-  //   void drawArrow() {
-  //     arrow.display();
-  //   }
-  // }
 }

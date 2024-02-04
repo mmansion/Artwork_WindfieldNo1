@@ -1,7 +1,7 @@
 class Point {
   
     PVector position;
-    Boolean active = false;
+    public Boolean active = false;
     Arrow arrow = null;
     float x, y, angle;
 
@@ -19,14 +19,10 @@ class Point {
     }
     void drawPoint() {
       pushStyle();
-      noFill();
-      if(tileId == -1) {
+      if(active && tileId > -1) {
         noStroke();
-        fill(0, 0, 100);
-        ellipse(this.position.x, this.position.y, 10, 10);
-      } else {
-        noFill();
-        noStroke();
+        fill(255);
+        ellipse(this.position.x, this.position.y, 10, 10);  
       }
       popStyle();
     }

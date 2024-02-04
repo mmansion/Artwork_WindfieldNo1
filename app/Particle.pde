@@ -1,8 +1,6 @@
 class Particle {
-    PVector pos;
+    public PVector pos;
     Particle() {
-        // pos = new PVector(x, y);
-        //pos = pos.copy();
         pos = this.randParticlePos();
     }
     void update() {
@@ -30,12 +28,9 @@ class Particle {
     }
     void display() {
       point(pos.x, pos.y);
- 
-      if(SHOW_RANGE) {
-          //noFill();
-          fill(255);
-          ellipse(pos.x, pos.y, range, range);
-      }
+
+      fill(0, 255, 255, 100);
+      ellipse(pos.x, pos.y, 5, 5);
   }
   PVector randParticlePos() {
     return new PVector(random(GRID_COLS * UNIT_SIZE), random(GRID_ROWS * UNIT_SIZE));

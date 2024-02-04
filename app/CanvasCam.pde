@@ -48,10 +48,8 @@ public class CanvasCam {
   public void mouseEvent(MouseEvent e) {
     switch (e.getAction()) {
       case MouseEvent.PRESS:
-        println("Mouse Pressed");
         break;
       case MouseEvent.RELEASE:
-        println("Mouse Released");
         break;
       case MouseEvent.DRAG:
       
@@ -70,8 +68,6 @@ public class CanvasCam {
         break;
         
       case MouseEvent.WHEEL: //TODO: smooth with rolling average of count
-
-        println("Mouse Wheel");
         float count = e.getCount();
         if(FLIP_ZOOM) count *= -1;
         if(count == 0) return;
@@ -82,8 +78,6 @@ public class CanvasCam {
           if(millis() - lastDirChange > 200) {
             lastDirChange = millis();
             zoomDir = scrollDir;
-            println("change dir");
-            println(zoomDir);
           } else {
             return;
           }
