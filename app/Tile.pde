@@ -2,24 +2,14 @@ class Tile {
 
   public int         id = -1; //if id = -1, then it's an empty tile spot on the grid
   public  PVector    position;
-  //private PVector    p1, p2, p3, p4, t1;
-  //private char[]     activePtBuff = new char[MTU];
-  //private byte[]     mtrCtrlBuff = new byte[MTU];
-  // public PVector[][] points = new PVector[ROWS_PER_TILE][COLS_PER_TILE];
   public String ip; // network address of platform
 
   ArrayList<PVector> points = new ArrayList();
-
   Boolean empty = true; //deemed empty until assigned an ID
 
   Tile(int id, PVector position, color col) {
-
     this.id = id;
-
-    println("Platform #" + id + " , with " + points.size());
-
     this.position = position; // set the origin position of the platform
-
     setPoints();
   }
 
@@ -37,8 +27,8 @@ class Tile {
     //draw red text in the top right corner of the tile the mcu number
     fill(255, 0, 0);
     textAlign(CENTER, CENTER); // Set text alignment to center
-    textSize(16);
-    text(id, 24, 20);
+    textSize(14);
+    text(buffer.ipAddresses[id], 34, 20);
 
     noFill(); 
     stroke(220, 200, 100, 200);
@@ -56,7 +46,6 @@ class Tile {
       text(i, p.x, p.y-2);
 
     }
-
     popMatrix();
     popStyle();
   }

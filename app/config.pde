@@ -1,5 +1,7 @@
 // SETTINGS
 
+boolean FREEZE_TO_INSPECT = false;
+
 color LED_OFF = color(150);
 color LED_ON = color(255);
 static int LED_SIZE = 100;
