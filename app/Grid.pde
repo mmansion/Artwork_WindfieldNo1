@@ -1,6 +1,7 @@
 class Grid {
 
   Tile[] tiles;
+  
   PVector[] center_points;
   int[] timeOff; //when to turn off in millis
   boolean[] active;
@@ -11,10 +12,9 @@ class Grid {
   // Assuming you have a baseDirection variable and a method to update it
   float baseDirection = 0; // Initial direction in degrees
   float directionChangeRate = 0.001; // How quickly the direction changes
-
   
   Grid() {
-
+    
     //ONE dimensional arrays
     int n = GRID_COLS * GRID_ROWS;
 
@@ -94,39 +94,38 @@ class Grid {
       //println("row: " + row);
       row++;
     }
-   
   }
-  void allOff() {
-    //for(int i = 0; i < center_points.length; i++) {
-    //  if(millis() > timeOff[i]) {
-    //    active[i] = false;
-    //  }
-    //}
-  }
-  void turnOn(int i) {
-    //active[i]  = true;
-    //timeOff[i] = millis() + decay;
-  }
-  void update() {
-    for (int i = 0; i < allPoints.size(); i++) {
+
+  void update() { 
+    
+    // TODO: update wind in this function
+    // TODO: update buffer in this function
+       
+    for (int i = 0; i < allPoints.size(); i++) {    
       Point point = allPoints.get(i);
+      
+      if(point.onTile()) { //check if point lies on a tile
+        println(point.tileId);
+      }
+      
       float timeOffset = noise(point.position.x * noiseScale, point.position.y * noiseScale, frameCount * noiseScale) * TWO_PI; // TWO_PI for a full rotation
+      
       // Adjust baseDirection over time
       baseDirection += directionChangeRate;
+      
       // Ensure baseDirection stays within 0-360 degrees
       baseDirection = baseDirection % 360;
+      
       // Convert baseDirection to radians for the math functions
       float baseDirectionRadians = radians(baseDirection);
       // Apply timeOffset and baseDirection to calculate the new angle
       point.angle = baseDirectionRadians + timeOffset; // This line adjusts the angle based on base direction and time
       
-     // point.active = false;
-      
+      // point.active = false;     
       //important to call update on the points to ensure the arrows reflect a change
       point.update();
-      
     }
-    
+        
     //baseDirection+=1;
     //if (baseDirection > 360) {
     //  baseDirection = 0;
@@ -138,7 +137,6 @@ class Grid {
   void display() {
     pushStyle();
 
-    allOff();
     noStroke();
   
     int n = GRID_COLS * GRID_ROWS;
@@ -162,6 +160,7 @@ class Grid {
     frameBorder();
     popStyle();
   }
+
   void displayVectors() {
     for (int i = 0; i < allPoints.size(); i++) {
       Point point = allPoints.get(i);

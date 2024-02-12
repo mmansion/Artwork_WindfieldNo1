@@ -1,12 +1,3 @@
-//// geo-mapping library
-//import de.fhpotsdam.unfolding.*;
-//import de.fhpotsdam.unfolding.geo.*;
-//import de.fhpotsdam.unfolding.utils.*;
-//import de.fhpotsdam.unfolding.providers.*;
-
-// gui library
-//import de.bezier.guido.*;
-
 //Java utils
 import java.util.List;
 import java.util.Date;

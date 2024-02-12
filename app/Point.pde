@@ -5,7 +5,7 @@ class Point {
     Arrow arrow = null;
     float x, y, angle;
 
-    int tileId = -1;
+    int tileId = -1; //track which tile this point belongs to
     int pointIndex = -1;
 
     Point(PVector position, float angle, int tileId, int pointIndex) {
@@ -28,5 +28,8 @@ class Point {
     }
     void drawArrow() {
       arrow.display();
+    }
+    Boolean onTile() {//whether this point belongs to a tile or is an empty position
+      return tileId > -1;
     }
 }

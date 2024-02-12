@@ -32,43 +32,20 @@ static int[][] TILE_ARRANGEMENT = {
 
 /* TILE CONFIG
   ------------------------------ */
-int NUM_TILES  = 38;
-//int NUM_RINGS      = 10;
-//int RING_SPACING   = 10;
-//int INNER_DIAM     = 200;
-//int OUTER_DIAM = SCREEN_WIDTH - 100;
-//int PLATFORM_START_DEG   = 0;
-//int PLATFORM_ARC_LENGTH  = 72;
-//int PLATFORM_DEG_SPACING = 10;
+static int NUM_TILES  = 38;
+static int COLS_PER_TILE = 4;
+static int ROWS_PER_TILE = 4;
 
-int POINTS_PER_PLATFORM; //calculated
-int COLS_PER_TILE = 4;
-int ROWS_PER_TILE = 4;
-
+//int POINTS_PER_PLATFORM; //set dynamically
 
 /* NETWORK & COMMS
   ------------------------------ */
 UDP udp; //define the udp object
-int MTU = 13; //maximum transmission unit (i.e. max bytes per platform)
 long lastUpdSendTime = 0;
 int udpSendTimeDelay = 10;
 
-String LOCAL_IP = "192.168.1.10";
-int    LOCAL_PORT = 6000;
+//String LOCAL_IP = "192.168.1.10";
+//int    LOCAL_PORT = 6000;
+static int UDP_SEND_PORT = 8020;
 
-String[] PLATFORM_IPS = {
-  "192.168.1.171",
-  "192.168.1.172",
-  "192.168.1.173",
-  "192.168.1.174"
-};
-
- // look into sending byte array data (buffer) - see send() in hypermedia.net lib
- //http://ubaa.net/shared/processing/udp/udp_class_udp.htm
-
- // byte array used for sending active motor status per platform
- // converted from unsigned char array
- byte[] byteArray = new byte[MTU];
- // character array used for storing active points in platform
- char[] charArr = new char[MTU];
- byte byteVal = -127;
+static int UDP_PACKET_SIZE = NUM_TILES * COLS_PER_TILE * ROWS_PER_TILE / 8;

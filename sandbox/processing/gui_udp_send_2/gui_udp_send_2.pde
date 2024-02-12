@@ -1,18 +1,18 @@
 //---------------------------------------------
-static int MCU_ID = 1;  //0-38 (e.g. MCU_ID 0 is mcu-001)
+static int MCU_ID = 37;  //0-37 (e.g. MCU_ID 0 is mcu-001)
 
+static int NUM_TILES = 38;
 // UDP
 import hypermedia.net.*;
 UDP udp;  // define the UDP object
-int UDP_PACKET_SIZE = 78;
+int UDP_PACKET_SIZE = 76;
 static int UDP_PORT = 7010;
 
-String[] ipAddresses = new String[39];
+String[] ipAddresses = new String[NUM_TILES];
 
 //byte array for sending active points
-//39 * 16 = 624 bits / 8 = 78 bytes
 //38 * 16 = 608 bits / 8 = 76 bytes
-byte[] byteArray = new byte[78];  //initializes to zero
+byte[] byteArray = new byte[UDP_PACKET_SIZE];  //initializes to zero
 
 byte setBit(byte b, int position) { //set to one
   return (byte) (b | (1 << position));

@@ -2,7 +2,6 @@
   ------------------------------ */
 UdpSender udpSender;
 
-
 Particle[] windParticles;
 boolean SHOW_PARTICLES = true;
 
@@ -35,8 +34,9 @@ void setup() {
   // creates new tile grid according to config/TILE_ARRANGEMENT
   grid = new Grid(); 
   
-  cam = new CanvasCam(this);
+  udpSender = new UdpSender(this);
   
+  cam = new CanvasCam(this); 
 }
 // 1 = grid dev
 // 2 = tile dev
@@ -55,9 +55,6 @@ void draw() {
       
       grid.display();
       grid.displayVectors();
-      
-      
-      
       
       stroke(255);
       if(SHOW_PARTICLES && millis() > wait_buildGrid) {

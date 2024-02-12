@@ -2,10 +2,9 @@ class Tile {
 
   public int         id = -1; //if id = -1, then it's an empty tile spot on the grid
   public  PVector    position;
-  private PVector    p1, p2, p3, p4, t1;
-  //private Boolean[]  activePtArr  = new Boolean[MTU * 8];
-  private char[]     activePtBuff = new char[MTU];
-  private byte[]     mtrCtrlBuff = new byte[MTU];
+  //private PVector    p1, p2, p3, p4, t1;
+  //private char[]     activePtBuff = new char[MTU];
+  //private byte[]     mtrCtrlBuff = new byte[MTU];
   // public PVector[][] points = new PVector[ROWS_PER_TILE][COLS_PER_TILE];
   public String ip; // network address of platform
 
