@@ -49,15 +49,10 @@ class Grid {
           tiles[i] = new Tile(mcu_count++, new PVector(x, y), 255);
 
           ArrayList<PVector> localPoints = tiles[i].getPoints();
-          // ArrayList<PVector> offsetPoints = new ArrayList();
           for (int pointIndex = 0; pointIndex < pointsPerTile; pointIndex++) {
             PVector offsetPosition = localPoints.get(pointIndex).copy();
             offsetPosition.x += x;
             offsetPosition.y += y;
-            // offsetPositions.add(offsetPosition);
-
-            //float angle = 0.0; //TMP
-            //float angle = calculateAngle(offsetPosition); // Replace `calculateAngle` with your own angle calculation logic
             float angle = map(noise(offsetPosition.x * noiseScale, offsetPosition.y * noiseScale), 0, 1, 0, TWO_PI); // map from [0,1] to [0,TWO_PI] for a full rotation
             Point point = new Point(offsetPosition, angle, tiles[i].id, pointIndex);
 
@@ -68,18 +63,13 @@ class Grid {
           tiles[i] = new Tile(-1, new PVector(x, y), 255);
 
           ArrayList<PVector> localPoints = tiles[i].getPoints();
-          // ArrayList<PVector> offsetPoints = new ArrayList();
           for (int pointIndex = 0; pointIndex < pointsPerTile; pointIndex++) {
             PVector offsetPosition = localPoints.get(pointIndex).copy();
             offsetPosition.x += x;
             offsetPosition.y += y;
 
-            //float angle = 0.0; //TMP
-            //float angle = calculateAngle(offsetPosition); // Replace `calculateAngle` with your own angle calculation logic
             float angle = map(noise(offsetPosition.x * noiseScale, offsetPosition.y * noiseScale), 0, 1, 0, TWO_PI); // map from [0,1] to [0,TWO_PI] for a full rotation
-
             Point point = new Point(offsetPosition, angle, tiles[i].id, pointIndex);
-
             allPoints.add(point); // Add the point to the list
           }
         }
@@ -104,14 +94,15 @@ class Grid {
 
       float timeOffset = noise(point.position.x * noiseScale, point.position.y * noiseScale, frameCount * noiseScale) * TWO_PI; // TWO_PI for a full rotation
 
-      // Adjust baseDirection over time
-      baseDirection += directionChangeRate;
+      //// Adjust baseDirection over time
+      //baseDirection += directionChangeRate;
 
-      // Ensure baseDirection stays within 0-360 degrees
-      baseDirection = baseDirection % 360;
+      //// Ensure baseDirection stays within 0-360 degrees
+      //baseDirection = baseDirection % 360;
+     
 
       // Convert baseDirection to radians for the math functions
-      float baseDirectionRadians = radians(baseDirection);
+      float baseDirectionRadians = radians(wind.direction);
       // Apply timeOffset and baseDirection to calculate the new angle
       point.angle = baseDirectionRadians + timeOffset; // This line adjusts the angle based on base direction and time
 
@@ -119,13 +110,6 @@ class Grid {
       //important to call update on the points to ensure the arrows reflect a change
       point.update();
     }
-
-    //baseDirection+=1;
-    //if (baseDirection > 360) {
-    //  baseDirection = 0;
-    //}
-    //println("base direct = " + baseDirection);
-    //println(allPoints.get(0).angle);
   }
 
   void display() {
@@ -175,7 +159,12 @@ class Grid {
       UNIT_SIZE * GRID_ROWS + GRID_BORDER_MARGIN);
     popStyle();
   }
-  void checkParticlesInRange(Particle[] particles, float range) {
+  void checkRange(Particle[] particles) {
+    int release = ACTIVE_RELEASE*(int)wind.speed;
+    if(release > MAX_ACTIVE_RELEASE) release = MAX_ACTIVE_RELEASE;
+    
+    float range = particleSize;
+    if(range < TILE_POINT_SIZE) range = TILE_POINT_SIZE;
 
     for (Point point : allPoints) {
       
@@ -183,17 +172,23 @@ class Grid {
       if (point.id > -1) {
         
         // reset point's active state for this check
-        point.active = false;
-
+        //point.active = false;
+        point.setInactive();
+        
+        int particleCount = 0;
+        
         // now loop through all particles for each point
         for (Particle particle : particles) {
+          particleCount++;
+          //if(particleCount> numParticles) continue;
           // Calculate the distance between the current point and particle
           float dist = PVector.dist(point.position, particle.pos);
           
           // Check if the distance is within the specified range
-          if (dist <= range) {
+          if (dist <= range && wind.speed >=WIND_MIN_SPD) {
             // If so, set the point's active flag to true
-            point.active = true;
+            
+            point.setActive(release);
             break; // Stop checking other particles for this point if one is found within range
           }
         }

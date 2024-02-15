@@ -2,6 +2,29 @@
 
 boolean FREEZE_TO_INSPECT = false;
 
+static int ACTIVE_RELEASE = 100; //delay release time for activated points
+static int MAX_ACTIVE_RELEASE = 800;
+
+/* WIND CONFIG
+  ------------------------------ */
+//directional drift
+static float WIND_MAX_SPD = 16.0;
+static float WIND_MIN_SPD = 1.0;
+
+static float MIN_DRIFT_SPD = -0.0;
+static float MAX_DRIFT_SPD = 2.2;
+static float DRIFT_RATE_SPD = 0.01;
+
+static float MIN_DRIFT_DIR = -100.0;
+static float MAX_DRIFT_DIR = 100.0;
+static float DRIFT_RATE_DIR = 0.01;
+
+
+static int NUM_PARTICLES = 20;
+static float MIN_PARTICLE_SIZE = 3.0;
+static float MAX_PARTICLE_SIZE = 50.0;
+
+
 color LED_OFF = color(150);
 color LED_ON = color(255);
 static int LED_SIZE = 100;
@@ -13,6 +36,7 @@ static int TILE_SIZE = 4; //ft
 static int PIXELS_PER_FOOT = 4;
 static int PIXEL_SIZE = 2;
 static int TILE_OFFSET = 8; //center sculpture at origin
+static int TILE_POINT_SIZE = 10;
 
 /* GRID CONFIG
   ------------------------------ */
@@ -34,7 +58,7 @@ static int[][] TILE_ARRANGEMENT = {
 
 /* TILE CONFIG
   ------------------------------ */
-static int NUM_TILES  = 38;
+static int NUM_TILES  = 39; //maintain consistency with firmware (78 byte arr)
 static int COLS_PER_TILE = 4;
 static int ROWS_PER_TILE = 4;
 

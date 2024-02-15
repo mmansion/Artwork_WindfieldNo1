@@ -6,21 +6,20 @@ class Particle {
     void update() {
         float n = noise(pos.x * noiseScale, pos.y * noiseScale, frameCount * noiseScale * noiseScale);
         float a = TWO_PI * n;
-        pos.x += cos(a) * boost;
-        pos.y += sin(a) * boost;
+        pos.x += cos(a) * wind.speed;
+        pos.y += sin(a) * wind.speed;
+        
         if (!onScreen(pos)) {
           pos = randParticlePos();
         }
-
-        //grid.checkRange(pos);
     }
     void update2() {
       // Get angle from the closest point in the grid
       float angle = grid.getAngleAtClosestPoint(pos);
   
       // Update position based on the angle
-      pos.x += cos(angle) * boost;
-      pos.y += sin(angle) * boost;
+      pos.x += cos(angle) * wind.speed;
+      pos.y += sin(angle) * wind.speed;
   
       if (!onScreen(pos)) {
           pos = randParticlePos();
@@ -28,9 +27,9 @@ class Particle {
     }
     void display() {
       point(pos.x, pos.y);
-
-      fill(0, 255, 255, 100);
-      ellipse(pos.x, pos.y, 5, 5);
+      noStroke();
+      fill(100, 150, 255, 80);
+      ellipse(pos.x, pos.y, particleSize, particleSize);
   }
   PVector randParticlePos() {
     return new PVector(random(GRID_COLS * UNIT_SIZE), random(GRID_ROWS * UNIT_SIZE));
