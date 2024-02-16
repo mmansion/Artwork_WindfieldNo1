@@ -99,7 +99,7 @@ class Grid {
 
       //// Ensure baseDirection stays within 0-360 degrees
       //baseDirection = baseDirection % 360;
-     
+
 
       // Convert baseDirection to radians for the math functions
       float baseDirectionRadians = radians(wind.direction);
@@ -122,8 +122,6 @@ class Grid {
     for (int i = 0; i < n; i++) {
       // maybe the grid can be optimized by drawing into a pgraphics once
       if (isTiled[i]) {
-        //fill(255, 0, 255);
-        //ellipse(center_points[i].x, center_points[i].y, 5, 5);
         tiles[i].display();
       } else {
         noFill();
@@ -161,38 +159,33 @@ class Grid {
   }
   void checkRange(Particle[] particles) {
     int release = ACTIVE_RELEASE*(int)wind.speed;
-    if(release > MAX_ACTIVE_RELEASE) release = MAX_ACTIVE_RELEASE;
-    
+    if (release > MAX_ACTIVE_RELEASE) release = MAX_ACTIVE_RELEASE;
+
     float range = particleSize;
-    if(range < TILE_POINT_SIZE) range = TILE_POINT_SIZE;
+    if (range < TILE_POINT_SIZE) range = TILE_POINT_SIZE;
 
     for (Point point : allPoints) {
-      
+
       //only proceed if the point belongs to a tile (has id > -1)
       if (point.id > -1) {
-        
+
         // reset point's active state for this check
         //point.active = false;
         point.setInactive();
-        
-        int particleCount = 0;
-        
+
         // now loop through all particles for each point
         for (Particle particle : particles) {
-          particleCount++;
-          //if(particleCount> numParticles) continue;
-          // Calculate the distance between the current point and particle
+          // calc the distance between the current point and particle
           float dist = PVector.dist(point.position, particle.pos);
-          
+
           // Check if the distance is within the specified range
           if (dist <= range && wind.speed >=WIND_MIN_SPD) {
             // If so, set the point's active flag to true
-            
             point.setActive(release);
-            break; // Stop checking other particles for this point if one is found within range
+            break; // stop checking other particles for this point if one is found within range
           }
         }
-        
+
         //after looping through all particles, update the status of the point
         buffer.set(point.id, point.index, point.active);
       }

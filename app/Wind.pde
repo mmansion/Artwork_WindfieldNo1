@@ -60,10 +60,7 @@ class Wind {
       }
       //print("using sensor speed");
     } else {
-      //println("using drift speed");
-      // Simulate idle wind using noise
       float idleWind = map(noise(noiseOffset), 0, 1, -1, 1);
-      
       noiseOffset += 0.001; // Increment noise offset
       
       //// Check for gusts with reduced probability
