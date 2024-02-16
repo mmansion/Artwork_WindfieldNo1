@@ -75,6 +75,8 @@ void draw() {
       }
     }
   }
+  
+  buffer.send();
 }
 Boolean toggleFreeze = false;
 void mousePressed() {

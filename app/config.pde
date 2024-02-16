@@ -66,12 +66,11 @@ static int ROWS_PER_TILE = 4;
 
 /* NETWORK & COMMS
   ------------------------------ */
-UDP udp; //define the udp object
 long lastUpdSendTime = 0;
 int udpSendTimeDelay = 10;
 
 //String LOCAL_IP = "192.168.1.10";
 //int    LOCAL_PORT = 6000;
-static int UDP_SEND_PORT = 8020;
+static int UDP_SEND_PORT = 7010;
 
 static int UDP_PACKET_SIZE = NUM_TILES * COLS_PER_TILE * ROWS_PER_TILE / 8;

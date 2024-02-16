@@ -3,13 +3,15 @@ class Buffer { //singleton class
   public String[] ipAddresses = new String[NUM_TILES];
 
   //byte array for sending active points
-  //38 * 16 = 608 bits / 8 = 76 bytes
+  //NUM_TILES * COLS_PER_TILE * ROWS_PER_TILE = n bits / 8 = x bytes
   byte[] byteArray = new byte[UDP_PACKET_SIZE];  //initializes to zero
 
   Buffer(PApplet root) {
 
     // UDP Setup
     udp = new UDP(root, UDP_SEND_PORT);
+    
+    udp.broadcast(true);
 
     //populate IP addresses
     for (int i = 0; i < ipAddresses.length; i++) {
@@ -37,19 +39,34 @@ class Buffer { //singleton class
       byteArray[byteIndex] &= ~(1 << (7 - bitIndex));
     }
   }
-
-  void send(String ip, int port, byte[] packet) {
-    udp.send(packet, ip, port);
+  void send() {
+    //udp.send(byteArray, "10.1.0.129", UDP_SEND_PORT);
+    for (int i = 0; i < ipAddresses.length; i++) {
+      udp.send(byteArray, ipAddresses[i], UDP_SEND_PORT);
+    }
   }
+  //void send() {
+  //  // Iterate over all IP addresses in the array
+  //  for (int i = 0; i < ipAddresses.length; i++) {
+  //    try {
+  //      // Send the byteArray to the current IP address as a string, using UDP_SEND_PORT
+  //      udp.send(byteArray, ipAddresses[i], UDP_SEND_PORT);
+  //    } catch (Exception e) {
+  //      // Handle exceptions, such as issues with sending the packet
+  //      println("Error sending to: " + ipAddresses[i] + " - " + e.getMessage());
+  //    }
+  //  }
+  //}
+
 
   void printBytes() {
     println("");
     for (int i = 0; i < byteArray.length; i++) {
-      if( i % 2 == 0) {
+      if ( i % 2 == 0) {
         println("");
         print(ipAddresses[i/2] + ": ");
       }
-      
+
       String binaryString = byteToBinary(byteArray[i]);
       print(binaryString);
 

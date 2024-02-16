@@ -1,5 +1,5 @@
 //---------------------------------------------
-static int MCU_ID = 37;  //0-37 (e.g. MCU_ID 0 is mcu-001)
+static int MCU_ID = 28;  //0-37 (e.g. MCU_ID 0 is mcu-001)
 
 static int NUM_TILES = 38;
 // UDP
