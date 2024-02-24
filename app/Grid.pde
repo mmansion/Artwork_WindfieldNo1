@@ -102,7 +102,7 @@ class Grid {
 
 
       // Convert baseDirection to radians for the math functions
-      float baseDirectionRadians = radians(wind.direction);
+      float baseDirectionRadians = radians(wind.getDirection());
       // Apply timeOffset and baseDirection to calculate the new angle
       point.angle = baseDirectionRadians + timeOffset; // This line adjusts the angle based on base direction and time
 

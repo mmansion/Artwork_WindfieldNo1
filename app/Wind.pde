@@ -28,8 +28,8 @@ class Wind {
     //println(speed);
   }
   public float getDirection() {
-    //return 1.0 + this.driftDirection();
-    return 0;
+    return 180.0 + this.driftDirection();
+    //return 0;
   }
   float getSensorSpeed() {
     //return 10.0;

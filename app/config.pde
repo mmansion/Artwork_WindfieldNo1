@@ -2,25 +2,25 @@
 
 boolean FREEZE_TO_INSPECT = false;
 
-static int ACTIVE_RELEASE = 100; //delay release time for activated points
+static int ACTIVE_RELEASE = 10; //delay release time for activated points
 static int MAX_ACTIVE_RELEASE = 800;
 
 /* WIND CONFIG
   ------------------------------ */
 //directional drift
-static float WIND_MAX_SPD = 16.0;
+static float WIND_MAX_SPD = 20.0;
 static float WIND_MIN_SPD = 1.0;
 
 static float MIN_DRIFT_SPD = -0.0;
 static float MAX_DRIFT_SPD = 2.2;
 static float DRIFT_RATE_SPD = 0.01;
 
-static float MIN_DRIFT_DIR = -100.0;
-static float MAX_DRIFT_DIR = 100.0;
-static float DRIFT_RATE_DIR = 0.01;
+static float MIN_DRIFT_DIR = -10.0;
+static float MAX_DRIFT_DIR = 10.0;
+static float DRIFT_RATE_DIR = 0.0001;
 
 
-static int NUM_PARTICLES = 20;
+static int NUM_PARTICLES = 18;
 static float MIN_PARTICLE_SIZE = 3.0;
 static float MAX_PARTICLE_SIZE = 50.0;
 
