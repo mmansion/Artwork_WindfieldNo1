@@ -55,27 +55,25 @@ void draw() {
 
   if (millis() > wait_posFrame) {
 
-    if (MODE == 1) {
-      background(0);
-      grid.update();
-      grid.checkRange(windParticles);
+    background(0);
+    grid.update();
+    grid.checkRange(windParticles);
 
-      grid.display();
-      grid.displayVectors();
+    grid.display();
+    grid.displayVectors();
 
-      stroke(255);
-      particleSize = lerp(particleSize, int(map(wind.speed, WIND_MIN_SPD, WIND_MAX_SPD, MIN_PARTICLE_SIZE, MAX_PARTICLE_SIZE)), 0.1);
-      if (SHOW_PARTICLES && millis() > wait_buildGrid) {
-        for (int i = 0; i < NUM_PARTICLES; i++) {
-          windParticles[i].update2();
-          //if(wind.speed >= MIN_WIND_SPD) {//display only if above min
-            windParticles[i].display();
-          //}
-        }
+    stroke(255);
+    particleSize = lerp(particleSize, int(map(wind.speed, WIND_MIN_SPD, WIND_MAX_SPD, MIN_PARTICLE_SIZE, MAX_PARTICLE_SIZE)), 0.1);
+    if (SHOW_PARTICLES && millis() > wait_buildGrid) {
+      for (int i = 0; i < NUM_PARTICLES; i++) {
+        windParticles[i].update2();
+        //if(wind.speed >= MIN_WIND_SPD) {//display only if above min
+        windParticles[i].display();
+        //}
       }
     }
   }
-  
+
   buffer.send();
 }
 Boolean toggleFreeze = false;

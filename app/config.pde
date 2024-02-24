@@ -1,5 +1,7 @@
 // SETTINGS
 
+String WIND_API_URL = "http://localhost:3000/api/wind";
+
 boolean FREEZE_TO_INSPECT = false;
 
 static int ACTIVE_RELEASE = 10; //delay release time for activated points
@@ -8,7 +10,7 @@ static int MAX_ACTIVE_RELEASE = 800;
 /* WIND CONFIG
   ------------------------------ */
 //directional drift
-static float WIND_MAX_SPD = 20.0;
+static float WIND_MAX_SPD = 30.0;
 static float WIND_MIN_SPD = 1.0;
 
 static float MIN_DRIFT_SPD = -0.0;
