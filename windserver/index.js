@@ -6,7 +6,7 @@ const port = 3000; // You can choose any port that suits your setup
 
 // Global variable to store wind speed and direction
 let windData = {
-  speed: 1,
+  speed: 30.5,
   direction: 0
 };
 
