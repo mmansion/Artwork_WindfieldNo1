@@ -13,8 +13,8 @@ static int MAX_ACTIVE_RELEASE = 800;
 static float WIND_MAX_SPD = 30.0;
 static float WIND_MIN_SPD = 1.0;
 
-static float MIN_DRIFT_SPD = -0.0;
-static float MAX_DRIFT_SPD = 2.2;
+static float MIN_DRIFT_SPD = -1.0;
+static float MAX_DRIFT_SPD = 3.2;
 static float DRIFT_RATE_SPD = 0.01;
 
 static float MIN_DRIFT_DIR = -10.0;

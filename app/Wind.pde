@@ -39,7 +39,7 @@ class Wind {
   }
   float getSensorSpeed() { //called from  Wind.updateSpeed
     //return 10.0;
-    return speed * getScaledValue(); //naturalizeWind();
+    return speed;// * getScaledValue(); //naturalizeWind();
   }
   float getScaledValue() {
     // Base value that we start with
@@ -83,6 +83,7 @@ class Wind {
       } else {
         speed = lerp(speed, idleWind, 0.1); // Return to idle wind behavior
       }
+      
       speed *= driftSpeed();
       // speed = lerp(speed, driftSpeed(), 2.5); // smoothly increase to sensor strength
     }
@@ -101,8 +102,8 @@ class Wind {
       }
 
       if (json != null) {
-         speed = json.getInt("speed");
-      direction = json.getInt("direction");
+         speed = json.getFloat("speed");
+         direction = json.getFloat("direction");
       }
 
 
