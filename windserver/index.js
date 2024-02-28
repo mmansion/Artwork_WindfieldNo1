@@ -6,7 +6,7 @@ const port = 3000; // You can choose any port that suits your setup
 
 // Global variable to store wind speed and direction
 let windData = {
-  speed: 10.5,
+  speed: 4.5,
   direction: 0
 };
 
@@ -30,7 +30,6 @@ api.on('subscribed', data => {
 });
 
 api.on('data', data => {
-  return;
   windData.speed = data.windspeedmph; // Assuming 'windspeedmph' is the property name for wind speed
   windData.direction = data.winddir; // Assuming 'winddir' is the property name for wind direction
   console.log('Current windspeedmph:', windData.speed);

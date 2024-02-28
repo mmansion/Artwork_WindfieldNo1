@@ -39,28 +39,25 @@ class Wind {
   }
   float getSensorSpeed() { //called from  Wind.updateSpeed
     //return 10.0;
-    return speed;// * getScaledValue(); //naturalizeWind();
+    return speed + getScaledValue(); //naturalizeWind();
   }
   float getScaledValue() {
-    // Base value that we start with
-    float baseValue = 1.0;
-
     // Generate a random number between 0 and 1 to determine if we should scale
     float chance = random(1);
 
     // Approximately 10% of the time, scale the value up to 0.1
     if (chance < 0.1) {
-      return baseValue * 10; // Scale by multiplying the base value
+      return 0.01; // Scale by multiplying the base value
     } else {
       // Remain around the base value most of the time
       // Add a small variation to make it "float" around 0.01
-      return baseValue + random(-0.002, 0.002);
+      return random(-0.002, 0.00002);
     }
   }
   void updateSpeed() {
 
     if (useSensorValue) {
-      speed = lerp(speed, getSensorSpeed(), 2.5); // smoothly increase to sensor strength
+      speed = lerp(speed, speed+getScaledValue(), 2.5); // smoothly increase to sensor strength
       if (millis() - lastSensorCheck > sensorRunDuration) { // sensing duration
         useSensorValue = false;
       }
@@ -102,7 +99,7 @@ class Wind {
       }
 
       if (json != null) {
-         speed = json.getFloat("speed");
+         speed = round(json.getFloat("speed"));
          direction = json.getFloat("direction");
       }
 
@@ -118,7 +115,7 @@ class Wind {
     }
     if (speed > WIND_MAX_SPD) {
       speed = WIND_MAX_SPD;
-    } else if (speed <= WIND_MIN_SPD) {
+    } else if (speed < WIND_MIN_SPD) {
       speed = 0.0; //turn
     }
 

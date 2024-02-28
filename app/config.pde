@@ -5,7 +5,7 @@ String WIND_API_URL = "http://localhost:3000/api/wind";
 boolean FREEZE_TO_INSPECT = false;
 
 static int ACTIVE_RELEASE = 10; //delay release time for activated points
-static int MAX_ACTIVE_RELEASE = 800;
+static int MAX_ACTIVE_RELEASE = 100;
 
 /* WIND CONFIG
   ------------------------------ */
