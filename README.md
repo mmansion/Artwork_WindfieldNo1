@@ -1,9 +1,5 @@
 ### Windfield No.1, Sculpture
 
-`WORK IN PROGRESS`
-
-
-
 #### Components
 
 | **name**    |  elem-id    | ip          | port(s)    |
