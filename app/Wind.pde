@@ -7,16 +7,27 @@ class Wind {
 
 
   //float windSpeed = 0; // Current wind speed
-  float noiseOffset = random(10); // Offset for noise function
-  float gustStrength = 3.0; // Maximum strength of wind gusts
   float lastGustTime = 0; // When the last gust happened
-  float gustFrequency = 8; // How often gusts can occur, in seconds (increased for less frequent gusts)
-  boolean isGusting = false; // Whether a gust is currently happening
 
+  float noiseOffset = 0.0;
+  float lastSensorCheck = 0;
+  float lastUpdate = 0;
   boolean useSensorValue = false;
-  float lastSensorCheck = -10000;
+
+  //boolean useSensorValue = false;
+  //float lastSensorCheck = -10000;
   float sensorCheckFrequency = 10000;//under run duration
   float sensorRunDuration = 5000;
+
+  float gustOffset = 0.0; // Separate offset for gusts
+  float lastGustCheck = 0; // Track when the last gust check occurred
+  boolean isGusting = false; // Indicates if a gust is currently happening
+  float gustDuration = 1000; // Duration of gust in milliseconds
+  float gustStrength = 50.0; // Example gust strength
+
+  boolean isCalm = false; // To track calm periods
+  float calmDuration = 0; // Duration of calm periods
+  float lastCalmCheck = millis(); // Last time calm period was checked
 
   JSONObject json = null;
   GetRequest get = new GetRequest("http://localhost:3000/api/wind");
@@ -30,8 +41,11 @@ class Wind {
     //println("Reponse Content: " + get.getContent());
     //println("Reponse Content-Length Header: " + get.ge/\tHeader("Content-Length"));
 
-    updateSpeed();
-    //updateDirection();
+    //updateSpeed();
+    updateSpeedSim(); //hotfix 240311
+
+    driftDirection();
+    direction+=0.1;
     //println(speed);
   }
   public float getDirection() { //called from Grid
@@ -39,7 +53,7 @@ class Wind {
   }
   float getSensorSpeed() { //called from  Wind.updateSpeed
     //return 10.0;
-    return speed + getScaledValue(); //naturalizeWind();
+    return speed * getScaledValue(); //naturalizeWind();
   }
   float getScaledValue() {
     // Generate a random number between 0 and 1 to determine if we should scale
@@ -47,11 +61,77 @@ class Wind {
 
     // Approximately 10% of the time, scale the value up to 0.1
     if (chance < 0.1) {
-      return 0.01; // Scale by multiplying the base value
+      return 2.0; // Scale by multiplying the base value
     } else {
       // Remain around the base value most of the time
       // Add a small variation to make it "float" around 0.01
-      return random(-0.002, 0.00002);
+
+      return 1.0;
+    }
+  }
+  void updateSpeedSim() {
+    float currentTime = millis();
+
+    // Check for calm periods
+    if (!isCalm && currentTime - lastCalmCheck > random(20000, 40000)) { // Check for calm every 20-40 seconds
+      if (random(1) < 0.1) { // 10% chance to start a calm period
+        isCalm = true;
+        calmDuration = random(5000, 10000); // Calm lasts between 5 and 10 seconds
+        lastCalmCheck = currentTime; // Reset lastCalmCheck to current time
+      }
+    }
+
+    if (isCalm) {
+      //println("CALM");
+      speed = lerp(speed, 0, 0.05); // Gradually decrease to zero for calm
+      if (currentTime - lastCalmCheck > random(5000, 20000)) {
+        isCalm = false; // End calm period
+      }
+    } else {
+      // Regular wind behavior using Perlin noise
+      float baseWind = map(noise(noiseOffset), 0, 1, WIND_MIN_SPD, WIND_MAX_SPD * 0.5);
+      noiseOffset += 0.005; // Slow change for organic movement
+
+      // Check and handle gusts
+      handleGusts(currentTime);
+
+      if (!isGusting) {
+        // Transition back to base wind
+        speed = lerp(speed, baseWind, 0.02);
+      }
+
+      // Enforce wind speed limits
+      if (speed > WIND_MAX_SPD) {
+        speed = WIND_MAX_SPD;
+      } else if (speed < WIND_MIN_SPD) {
+        speed = WIND_MIN_SPD;
+      }
+    }
+
+
+    //println(speed); // Monitor wind speed
+  }
+
+  void handleGusts(float currentTime) {
+    // Check for gusts
+    if (currentTime - lastGustCheck > random(10000, 30000)) { // Check every 10-30 seconds
+      lastGustCheck = currentTime;
+      if (random(1) < 0.2) { // 20% chance to start a gust
+        isGusting = true;
+      }
+    }
+
+    if (isGusting) {
+      println("GUSTING");
+      // Use a higher gust strength and ensure it decays quickly after the gust duration
+      float gustWind = map(noise(gustOffset), 0, 1, speed, gustStrength);
+      gustOffset += 0.1; // Faster change for gust
+      speed = lerp(speed, gustWind, 0.1); // Smooth transition to gust speed
+
+      if (currentTime - lastGustCheck > gustDuration) {
+        isGusting = false; // End gust after its duration
+        gustOffset = 0.0; // Reset gust offset for the next gust
+      }
     }
   }
   void updateSpeed() {
@@ -67,7 +147,7 @@ class Wind {
       noiseOffset += 0.001; // Increment noise offset
 
       //// Check for gusts with reduced probability
-      if (millis() - lastGustTime > gustFrequency * 1000 && random(1) < 0.01) { // Reduced probability for starting a gust
+      if (millis() - lastGustTime > random(10000, 30000) && random(1) < 0.01) { // Reduced probability for starting a gust
         isGusting = true;
         lastGustTime = millis();
       }
@@ -80,7 +160,7 @@ class Wind {
       } else {
         speed = lerp(speed, idleWind, 0.1); // Return to idle wind behavior
       }
-      
+
       speed *= driftSpeed();
       // speed = lerp(speed, driftSpeed(), 2.5); // smoothly increase to sensor strength
     }
@@ -99,12 +179,12 @@ class Wind {
       }
 
       if (json != null) {
-         speed = round(json.getFloat("speed"));
-         direction = json.getFloat("direction");
+        speed = round(json.getFloat("speed"));
+        direction = json.getFloat("direction");
       }
 
 
-     
+
 
       println("speed = " + speed);
       println("direction = " + direction);

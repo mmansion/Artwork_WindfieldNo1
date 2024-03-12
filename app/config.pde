@@ -10,8 +10,9 @@ static int MAX_ACTIVE_RELEASE = 100;
 /* WIND CONFIG
   ------------------------------ */
 //directional drift
-static float WIND_MAX_SPD = 30.0;
+static float WIND_MAX_SPD = 20.0;
 static float WIND_MIN_SPD = 1.0;
+
 
 static float MIN_DRIFT_SPD = -1.0;
 static float MAX_DRIFT_SPD = 3.2;
@@ -22,10 +23,9 @@ static float MAX_DRIFT_DIR = 10.0;
 static float DRIFT_RATE_DIR = 0.0001;
 
 
-static int NUM_PARTICLES = 18;
-static float MIN_PARTICLE_SIZE = 3.0;
-static float MAX_PARTICLE_SIZE = 50.0;
-
+static int NUM_PARTICLES = 16;
+static float MIN_PARTICLE_SIZE = 5.0;
+static float MAX_PARTICLE_SIZE = 100.0;
 
 color LED_OFF = color(150);
 color LED_ON = color(255);
